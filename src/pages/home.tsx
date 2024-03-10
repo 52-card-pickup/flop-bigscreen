@@ -58,36 +58,24 @@ function createClient() {
 }
 
 export default function Home() {
-  const [players, setPlayers] = createSignal([
-    { name: "Matthew", balance: 9876 },
-    { name: "Mark", balance: 8569 },
-    { name: "Luke", balance: 1234 },
-    { name: "John", balance: 5678 },
-  ]);
-
-  const [cards, setCards] = createSignal<[CardSuite, CardValue][]>([
-    ["hearts", "queen"],
-    ["diamonds", "ace"],
-    ["clubs", "10"],
-    ["spades", "2"],
-  ]);
-
-  const [pot, setPot] = createSignal(100000);
-
   const client = createClient();
 
-  createEffect(() => {
-    const state = client();
-    setPlayers(state.players);
-    setCards(state.cards);
-    setPot(state.pot);
-  });
+  const players = () => client().players;
+  const cards = () => client().cards;
+  const pot = () => client().pot;
 
   return (
     <section class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen">
       <div class="grid justify-center items-center gap-4">
         <h1 class="text-4xl font-bold my-6 shadow-sm text-center">flop.</h1>
-        <CardTable cards={cards()} />
+        <div class="grid justify-center items-center">
+          <div class="grid grid-cols-5 gap-4 rounded-[2rem] bg-green-950 p-8 ring-8 ring-green-900 shadow-lg">
+            <For each={cards()}>
+              {([suite, value], index
+              ) => <Card suite={suite} value={value} key={index()} />}
+            </For>
+          </div>
+        </div>
         <div class="grid justify-center items-center gap-4">
           <span class="text-4xl font-bold my-2 text-zinc-50 py-2">
             {currency.format(pot())}
@@ -96,8 +84,10 @@ export default function Home() {
         </div>
         <div class="grid justify-center items-center gap-8 auto-cols-fr grid-flow-col px-12">
           <For each={players()}>
-            {(player) => (
-              <div class="row-start-1 grid justify-center items-center gap-4 rounded-lg bg-zinc-900 p-4 ring-4 ring-zinc-600 shadow-lg">
+            {(player, index) => (
+              <div class="row-start-1 grid justify-center items-center gap-4 rounded-lg bg-zinc-900 p-4 ring-4 ring-zinc-600 shadow-lg"
+                data-index={index()}
+              >
                 <span class="text-3xl font-bold text-zinc-300 text-center">
                   {player.name}
                 </span>
@@ -110,19 +100,6 @@ export default function Home() {
         </div>
       </div>
     </section>
-  );
-}
-
-function CardTable({ cards }: { cards: [CardSuite, CardValue][] }) {
-  console.log(cards);
-  return (
-    <div class="grid justify-center items-center">
-      <div class="grid grid-cols-5 gap-4 rounded-[2rem] bg-green-950 p-8 ring-8 ring-green-900 shadow-lg">
-        <For each={cards}>
-          {([suite, value]) => <Card suite={suite} value={value} />}
-        </For>
-      </div>
-    </div>
   );
 }
 
@@ -142,8 +119,8 @@ type CardValue =
   | "king"
   | "ace";
 
-function Card({ suite, value }: { suite: CardSuite; value: CardValue }) {
+function Card({ suite, value, key }: { suite: CardSuite; value: CardValue; key?: number }) {
   return (
-    <img src={`/cards/${suite}_${value}.svg`} alt={`${value} of ${suite}`} />
+    <img src={`/cards/${suite}_${value}.svg`} alt={`${value} of ${suite}`} data-key={key} />
   );
 }
