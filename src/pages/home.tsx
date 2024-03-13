@@ -1,4 +1,4 @@
-import { For, createEffect, createSignal } from "solid-js";
+import { For, Show, createEffect, createSignal } from "solid-js";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -11,6 +11,7 @@ type GameClientState = {
   players: {
     name: string;
     balance: number;
+    turnExpiresDt: number | null;
   }[];
   pot: number;
   cards: [CardSuite, CardValue][];
@@ -19,20 +20,27 @@ type GameClientState = {
 
 function createClient() {
   const url = import.meta.env.VITE_API_URL as string;
-  const [state, setState] = createSignal<GameClientState>({
-    state: "idle",
-    players: [],
-    pot: 0,
-    cards: [],
-    lastUpdate: 0,
-  });
+  const [state, setState] = createSignal<GameClientState>(
+    {
+      state: "idle",
+      players: [],
+      pot: 0,
+      cards: [],
+      lastUpdate: 0,
+    },
+    { name: "game-client", equals: (a, b) => a.lastUpdate === b.lastUpdate }
+  );
 
-  createEffect(() => {
+  createEffect((cleanup: () => void
+  ) => {
+    if (cleanup) cleanup();
     const abortController = new AbortController();
     let timeout: number;
+    let data: GameClientState | null = null;
 
     async function get() {
-      const data: GameClientState | null = await fetch(url, {
+      const requestUrl = data?.lastUpdate ? `${url}?since=${data.lastUpdate}` : url;
+      data = await fetch(requestUrl, {
         signal: abortController.signal,
       })
         .then((res) => (res.ok ? res.json() : Promise.reject<null>(res)))
@@ -54,7 +62,7 @@ function createClient() {
     };
   });
 
-  return state;
+  return () => state();
 }
 
 export default function Home() {
@@ -64,15 +72,54 @@ export default function Home() {
   const cards = () => client().cards;
   const pot = () => client().pot;
 
+  const [activePlayer, setActivePlayer] = createSignal<{
+    idx: number;
+    countdown: number | null;
+  } | null>(null);
+
+  const playerCountdown = (turnExpiresDt: number | null) => {
+    if (!turnExpiresDt) return null;
+    const now = Date.now();
+    const expires = new Date(turnExpiresDt).getTime();
+    const diff = expires - now;
+    return diff > 0 ? Math.round(diff / 1000) : null;
+  };
+
+  createEffect((interval?: number) => {
+    if (interval) {
+      clearInterval(interval);
+    }
+
+    const players = client().players;
+    const activePlayers = players.filter((p) => p.turnExpiresDt !== null);
+    const active = activePlayers.sort(
+      (a, b) => b.turnExpiresDt! - a.turnExpiresDt!
+    )[0];
+    if (!active) {
+      setActivePlayer(null);
+      return;
+    }
+    return setInterval(() => {
+      setActivePlayer({
+        idx: players.findIndex(
+          (p) => p.turnExpiresDt === active.turnExpiresDt
+        ),
+        countdown: playerCountdown(active.turnExpiresDt),
+      });
+    }, 1000);
+  });
+
+
   return (
     <section class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen">
-      <div class="grid justify-center items-center gap-4">
+      <div class="flex flex-col justify-center items-center gap-4">
         <h1 class="text-4xl font-bold my-6 shadow-sm text-center">flop.</h1>
         <div class="grid justify-center items-center">
-          <div class="grid grid-cols-5 gap-4 rounded-[2rem] bg-green-950 p-8 ring-8 ring-green-900 shadow-lg">
+          <div class="grid grid-cols-5 gap-4 rounded-[4rem] bg-green-950 p-16 ring-8 ring-green-900 shadow-lg min-w-[80vw] min-h-[200px]">
             <For each={cards()}>
-              {([suite, value], index
-              ) => <Card suite={suite} value={value} key={index()} />}
+              {([suite, value], index) => (
+                <Card suite={suite} value={value} key={index()} />
+              )}
             </For>
           </div>
         </div>
@@ -85,21 +132,58 @@ export default function Home() {
         <div class="grid justify-center items-center gap-8 auto-cols-fr grid-flow-col px-12">
           <For each={players()}>
             {(player, index) => (
-              <div class="row-start-1 grid justify-center items-center gap-4 rounded-lg bg-zinc-900 p-4 ring-4 ring-zinc-600 shadow-lg"
+              <div
+                classList={{
+                  "row-start-1 grid justify-center items-center gap-4 rounded-lg bg-zinc-900 p-6 shadow-lg":
+                    true,
+                  "ring-4 ring-zinc-600": index() !== activePlayer()?.idx,
+                  "ring-8 ring-teal-100": index() === activePlayer()?.idx,
+                }}
                 data-index={index()}
               >
                 <span class="text-3xl font-bold text-zinc-300 text-center">
                   {player.name}
                 </span>
-                <span class="text-xl font-bold text-teal-300 text-center">
-                  {currency.format(player.balance)}
-                </span>
+                <div class="grid justify-center items-center gap-4 relative">
+                  <span class="text-xl font-bold text-teal-300 text-center">
+                    {currency.format(player.balance)}
+                  </span>
+
+                  <Show when={index() === activePlayer()?.idx}>
+                    <span
+                      classList={{
+                        "text-xl font-bold text-center absolute -bottom-16 w-full":
+                          true,
+                        "text-white": activePlayer()!.countdown > 5,
+                        "text-red-400 animate-pulse":
+                          activePlayer()!.countdown <= 5,
+                      }}
+                    >
+                      {activePlayer()?.countdown}
+                    </span>
+                  </Show>
+                </div>
               </div>
             )}
           </For>
         </div>
       </div>
     </section>
+  );
+}
+
+function CardTable({ cards }: { cards: [CardSuite, CardValue][] }) {
+  console.log(cards);
+  return (
+    <div class="grid justify-center items-center">
+      <div class="grid grid-cols-5 gap-4 rounded-[2rem] bg-green-950 p-8 ring-8 ring-green-900 shadow-lg">
+        <For each={cards}>
+          {([suite, value], index) => (
+            <Card suite={suite} value={value} key={index()} />
+          )}
+        </For>
+      </div>
+    </div>
   );
 }
 
@@ -119,8 +203,20 @@ type CardValue =
   | "king"
   | "ace";
 
-function Card({ suite, value, key }: { suite: CardSuite; value: CardValue; key?: number }) {
+function Card({
+  suite,
+  value,
+  key,
+}: {
+  suite: CardSuite;
+  value: CardValue;
+  key?: number;
+}) {
   return (
-    <img src={`/cards/${suite}_${value}.svg`} alt={`${value} of ${suite}`} data-key={key} />
+    <img
+      src={`/cards/${suite}_${value}.svg`}
+      alt={`${value} of ${suite}`}
+      data-key={key}
+    />
   );
 }
