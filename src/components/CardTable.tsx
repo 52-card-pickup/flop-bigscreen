@@ -1,21 +1,29 @@
 import { For } from "solid-js";
 import { CardSuite, CardValue } from "../signals/createClient";
 import { Card } from "./Card";
+import cn from "../utils/cn";
 
 export function CardTable({
     cards,
+    variant = "large",
 }: {
     cards: () => [CardSuite, CardValue][];
+    variant?: "small" | "large";
 }) {
     return (
         <div
             class="grid justify-center items-center"
             data-component-name="CardTable"
         >
-            <div class="grid grid-cols-5 gap-4 rounded-[4rem] bg-green-950 p-16 ring-8 ring-green-900 shadow-lg min-w-[80vw] min-h-[200px]">
+            <div
+                class={cn(
+                    "grid grid-cols-5 gap-4 bg-green-950 ring-8 ring-green-900 shadow-lg min-h-fit min-w-fit",
+                    variant === "small" ? "rounded-[0.5rem]" : "p-16 rounded-[4rem]"
+                )}
+            >
                 <For each={cards()}>
                     {([suite, value], index) => (
-                        <Card suite={suite} value={value} key={index()} />
+                        <Card suite={suite} value={value} key={index()} variant={variant} />
                     )}
                 </For>
             </div>
