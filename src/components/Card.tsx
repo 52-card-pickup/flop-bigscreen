@@ -31,13 +31,13 @@ export function Card({
 function SuitEmoji({ suit }: { suit: string }) {
     switch (suit) {
         case "hearts":
-            return <span role="img" aria-label="hearts" class="text-red">♥️</span>;
+            return <span role="img" aria-label="hearts" class="text-[#ff0000]">♥️</span>;
         case "diamonds":
-            return <span role="img" aria-label="diamonds">♦️</span>;
+            return <span role="img" aria-label="diamonds" class="text-[#ff0000]">♦️</span>;
         case "clubs":
             return <span role="img" aria-label="clubs" class="text-black">♣️</span>;
         case "spades":
-            return <span role="img" aria-label="spades">♠️</span>;
+            return <span role="img" aria-label="spades" class="text-black">♠️</span>;
         default:
             return null;
     }
