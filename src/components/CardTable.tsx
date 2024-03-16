@@ -23,7 +23,7 @@ export function CardTable({
             >
                 <For each={cards()}>
                     {([suite, value], index) => (
-                        <Card suite={suite} value={value} key={index()} variant={variant} />
+                        <Card suite={suite} value={value} key={index()} />
                     )}
                 </For>
             </div>

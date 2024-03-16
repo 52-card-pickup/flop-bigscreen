@@ -1,6 +1,7 @@
 import { For, Show, createEffect, createSignal } from "solid-js";
 import { CompletedGame, GameClientState } from "../signals/createClient";
 import { currency } from "../pages/home";
+import { Card } from "./Card";
 
 export function Players({
     players,
@@ -63,11 +64,11 @@ export function Players({
                         <Show when={completed}>
                             <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
                                 {completed.playerCards[index()].map((card, idx) => (
-                                    <img
-                                        src={`/cards/${card[0]}_${card[1]}.svg`}
-                                        alt={`${card[1]} of ${card[0]}`}
-                                        data-key={idx}
-                                        class="w-16"
+                                    <Card
+                                        suite={card[0]}
+                                        value={card[1]}
+                                        key={idx}
+                                        variant="small"
                                     />
                                 ))}
                             </div>
