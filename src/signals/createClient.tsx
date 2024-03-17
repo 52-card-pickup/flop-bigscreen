@@ -57,8 +57,9 @@ export function createClient() {
 
         async function get() {
             const requestUrl = data?.lastUpdate
-                ? `${url}?since=${data.lastUpdate}`
+                ? `${url}?timeout=15000&since=${data.lastUpdate}`
                 : url;
+            const before = Date.now();
             data = await fetch(requestUrl, {
                 signal: abortController.signal,
             })
@@ -70,7 +71,8 @@ export function createClient() {
             if (data && data.lastUpdate > state().lastUpdate) {
                 setState(data);
             }
-            timeout = setTimeout(get, 1000);
+            const elapsed = Date.now() - before;
+            timeout = setTimeout(get, Math.max(0, 1000 - elapsed));
         }
 
         get();
