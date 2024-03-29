@@ -8,7 +8,7 @@ export default function Home() {
     const client = createClient();
     return (
         <section
-            class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen"
+            class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen overflow-auto"
             data-component-name="Home"
         >
             <Show when={client().state === "waiting"}>

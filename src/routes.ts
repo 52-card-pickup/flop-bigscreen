@@ -6,21 +6,21 @@ import AboutData from './pages/about.data';
 import TV from './pages/tv';
 
 export const routes: RouteDefinition[] = [
-  {
-    path: '/',
-    component: Home,
-  },
-  {
-    path: '/tv',
-    component: TV,
-  },
-  {
-    path: '/about',
-    component: lazy(() => import('./pages/about')),
-    data: AboutData,
-  },
-  {
-    path: '**',
-    component: lazy(() => import('./errors/404')),
-  },
+    {
+        path: '/',
+        component: Home,
+    },
+    {
+        path: '/tv',
+        component: TV,
+    },
+    {
+        path: '/about',
+        component: lazy(() => import('./pages/about')),
+        data: AboutData,
+    },
+    {
+        path: '**',
+        component: lazy(() => import('./errors/404')),
+    },
 ];
