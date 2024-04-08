@@ -20,7 +20,7 @@ export function Players({
         const now = Date.now();
         const expires = new Date(turnExpiresDt).getTime();
         const diff = expires - now;
-        return diff > 0 ? Math.round(diff / 1000) : null;
+        return diff > 0 ? Math.ceil(diff / 1000) : null;
     };
 
     createEffect((interval?: number) => {
@@ -58,6 +58,7 @@ export function Players({
                                 true,
                             "ring-4 ring-zinc-600": index() !== activePlayer()?.idx,
                             "ring-8 ring-teal-100": index() === activePlayer()?.idx,
+                            "opacity-50": player.folded,
                         }}
                         data-index={index()}
                     >
