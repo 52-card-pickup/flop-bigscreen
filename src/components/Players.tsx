@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createSignal } from "solid-js";
+import { Index, Show, createEffect, createSignal } from "solid-js";
 import {
   CompletedGame,
   GameClientState,
@@ -66,66 +66,72 @@ export function Players({
       class="grid justify-center items-center gap-8 auto-cols-fr grid-flow-col px-12 relative"
       data-component-name="Players"
     >
-      <For each={players()}>
+      <Index each={players()}>
         {(player, index) => (
           <div
-            classList={{
-              "grid justify-center items-center gap-4 h-full rounded-lg bg-zinc-900 px-6 py-4 shadow-lg":
-                true,
-              "ring-4 ring-zinc-600": index() !== activePlayer()?.idx,
-              "ring-8 ring-teal-100": index() === activePlayer()?.idx,
-              "opacity-30 relative top-8": player.folded,
-            }}
-            data-index={index()}
+            class="grid justify-center items-center h-full [perspective:1000px]"
+            data-index={index}
           >
-            <Show when={completed}>
-              <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
-                {completed.playerCards[index()]?.map((card, idx) => (
-                  <Card
-                    suite={card[0]}
-                    value={card[1]}
-                    key={idx}
-                    variant="small"
-                  />
-                ))}
-              </div>
-            </Show>
-            <Show when={!completed}>
-              <div class="grid max-w-36">
-                <Show when={showPhotos()}>
-                  <img
-                    src={constructPhotoUrl(player.photo)}
-                    alt={player.name}
-                    class="rounded-full w-20 h-20"
-                  />
+            <div
+              classList={{
+                "grid justify-center items-center gap-4 h-full rounded-lg bg-zinc-900 px-6 py-4 shadow-lg transform transition duration-300 ease-in-out":
+                  true,
+                "ring-4 ring-zinc-600": index !== activePlayer()?.idx,
+                "ring-8 ring-teal-100": index === activePlayer()?.idx,
+                "opacity-30 translate-y-8 [transform:rotateX(40deg)] [transform-origin:bottom]":
+                  player().folded,
+              }}
+              data-index={index}
+            >
+              <Show when={completed}>
+                <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
+                  {completed.playerCards[index]?.map((card, idx) => (
+                    <Card
+                      suite={card[0]}
+                      value={card[1]}
+                      key={idx}
+                      variant="small"
+                    />
+                  ))}
+                </div>
+              </Show>
+              <Show when={!completed}>
+                <div class="grid max-w-36">
+                  <Show when={showPhotos()}>
+                    <img
+                      src={constructPhotoUrl(player().photo)}
+                      alt={player().name}
+                      class="rounded-full w-20 h-20"
+                    />
+                  </Show>
+                </div>
+              </Show>
+              <div class="grid justify-center items-center gap-4 relative">
+                <span class="text-2xl font-bold text-zinc-300 text-center">
+                  {player().name}
+                </span>
+                <span class="text-xl font-bold text-teal-300 text-center">
+                  {currency.format(player().balance)}
+                </span>
+
+                <Show when={index === activePlayer()?.idx}>
+                  <span
+                    classList={{
+                      "text-xl font-bold text-center absolute -bottom-16 w-full":
+                        true,
+                      "text-white": activePlayer()!.countdown > 5,
+                      "text-red-400 animate-pulse":
+                        activePlayer()!.countdown <= 5,
+                    }}
+                  >
+                    {activePlayer()?.countdown}
+                  </span>
                 </Show>
               </div>
-            </Show>
-            <div class="grid justify-center items-center gap-4 relative">
-              <span class="text-2xl font-bold text-zinc-300 text-center">
-                {player.name}
-              </span>
-              <span class="text-xl font-bold text-teal-300 text-center">
-                {currency.format(player.balance)}
-              </span>
-
-              <Show when={index() === activePlayer()?.idx}>
-                <span
-                  classList={{
-                    "text-xl font-bold text-center absolute -bottom-16 w-full":
-                      true,
-                    "text-white": activePlayer()!.countdown > 5,
-                    "text-red-400 animate-pulse":
-                      activePlayer()!.countdown <= 5,
-                  }}
-                >
-                  {activePlayer()?.countdown}
-                </span>
-              </Show>
             </div>
           </div>
         )}
-      </For>
+      </Index>
     </div>
   );
 }
