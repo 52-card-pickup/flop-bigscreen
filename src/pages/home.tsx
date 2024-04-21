@@ -8,7 +8,7 @@ export default function Home() {
     const client = createClient();
     return (
         <section
-            class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen"
+            class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen overflow-auto"
             data-component-name="Home"
         >
             <Show when={client().state === "waiting"}>
@@ -89,7 +89,7 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
         <FlopContainer>
             <div class="grid justify-center items-center gap-8 place-self-center mb-4">
                 <h1 class="text-4xl font-bold my-0 p-0 shadow-sm text-center text-zinc-300">
-                    {`${players().at(completed().winnerIdx).name} wins with a ${completed().winningHand
+                    {`${completed().winnerName} wins with a ${completed().winningHand
                         }`}
                 </h1>
                 <div class="grid justify-center items-center gap-4 w-2/3 justify-self-center">

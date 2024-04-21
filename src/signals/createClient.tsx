@@ -14,7 +14,7 @@ export type GameClientState = {
 };
 
 export type CompletedGame = {
-    winnerIdx: number;
+    winnerName: string;
     winningHand: string;
     playerCards: [[CardSuite, CardValue], [CardSuite, CardValue]][];
 };
