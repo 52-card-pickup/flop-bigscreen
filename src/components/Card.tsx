@@ -21,6 +21,7 @@ export function Card({
         <img
             src={`/cards/${suite}_${value}.svg`}
             alt={`${value} of ${suite}`}
+            class="h-full"
             data-key={key}
         />
     );
