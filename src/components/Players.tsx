@@ -1,104 +1,131 @@
 import { For, Show, createEffect, createSignal } from "solid-js";
-import { CompletedGame, GameClientState } from "../signals/createClient";
+import {
+  CompletedGame,
+  GameClientState,
+  apiURL,
+} from "../signals/createClient";
 import { currency } from "../pages/home";
 import { Card } from "./Card";
 
 export function Players({
-    players,
-    completed,
+  players,
+  completed,
 }: {
-    players: () => GameClientState["players"];
-    completed?: CompletedGame;
+  players: () => GameClientState["players"];
+  completed?: CompletedGame;
 }) {
-    const [activePlayer, setActivePlayer] = createSignal<{
-        idx: number;
-        countdown: number | null;
-    } | null>(null);
+  const [activePlayer, setActivePlayer] = createSignal<{
+    idx: number;
+    countdown: number | null;
+  } | null>(null);
 
-    const playerCountdown = (turnExpiresDt: number | null) => {
-        if (!turnExpiresDt) return null;
-        const now = Date.now();
-        const expires = new Date(turnExpiresDt).getTime();
-        const diff = expires - now;
-        return diff > 0 ? Math.ceil(diff / 1000) : null;
-    };
+  const playerCountdown = (turnExpiresDt: number | null) => {
+    if (!turnExpiresDt) return null;
+    const now = Date.now();
+    const expires = new Date(turnExpiresDt).getTime();
+    const diff = expires - now;
+    return diff > 0 ? Math.ceil(diff / 1000) : null;
+  };
 
-    createEffect((interval?: number) => {
-        if (interval) {
-            clearInterval(interval);
-        }
+  createEffect((interval?: number) => {
+    if (interval) {
+      clearInterval(interval);
+    }
 
-        const p = players();
-        const activePlayers = p.filter((p) => p.turnExpiresDt !== null);
-        const active = activePlayers.sort(
-            (a, b) => b.turnExpiresDt! - a.turnExpiresDt!
-        )[0];
-        if (!active) {
-            setActivePlayer(null);
-            return;
-        }
-        return setInterval(() => {
-            setActivePlayer({
-                idx: p.findIndex((p) => p.turnExpiresDt === active.turnExpiresDt),
-                countdown: playerCountdown(active.turnExpiresDt),
-            });
-        }, 1000);
-    });
+    const p = players();
+    const activePlayers = p.filter((p) => p.turnExpiresDt !== null);
+    const active = activePlayers.sort(
+      (a, b) => b.turnExpiresDt! - a.turnExpiresDt!
+    )[0];
+    if (!active) {
+      setActivePlayer(null);
+      return;
+    }
+    return setInterval(() => {
+      setActivePlayer({
+        idx: p.findIndex((p) => p.turnExpiresDt === active.turnExpiresDt),
+        countdown: playerCountdown(active.turnExpiresDt),
+      });
+    }, 1000);
+  });
 
-    return (
-        <div
-            class="grid justify-center items-center gap-8 auto-cols-fr grid-flow-col px-12"
-            data-component-name="Players"
-        >
-            <For each={players()}>
-                {(player, index) => (
-                    <div
-                        classList={{
-                            "row-start-1 grid justify-center items-center gap-4 rounded-lg bg-zinc-900 p-6 shadow-lg":
-                                true,
-                            "ring-4 ring-zinc-600": index() !== activePlayer()?.idx,
-                            "ring-8 ring-teal-100": index() === activePlayer()?.idx,
-                            "opacity-50": player.folded,
-                        }}
-                        data-index={index()}
-                    >
-                        <Show when={completed}>
-                            <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
-                                {completed.playerCards[index()].map((card, idx) => (
-                                    <Card
-                                        suite={card[0]}
-                                        value={card[1]}
-                                        key={idx}
-                                        variant="small"
-                                    />
-                                ))}
-                            </div>
-                        </Show>
-                        <span class="text-2xl font-bold text-zinc-300 text-center">
-                            {player.name}
-                        </span>
-                        <div class="grid justify-center items-center gap-4 relative">
-                            <span class="text-xl font-bold text-teal-300 text-center">
-                                {currency.format(player.balance)}
-                            </span>
+  const apiUrl = apiURL();
+  const showPhotos = () => players().some((p) => p.photo !== null);
 
-                            <Show when={index() === activePlayer()?.idx}>
-                                <span
-                                    classList={{
-                                        "text-xl font-bold text-center absolute -bottom-16 w-full":
-                                            true,
-                                        "text-white": activePlayer()!.countdown > 5,
-                                        "text-red-400 animate-pulse":
-                                            activePlayer()!.countdown <= 5,
-                                    }}
-                                >
-                                    {activePlayer()?.countdown}
-                                </span>
-                            </Show>
-                        </div>
-                    </div>
-                )}
-            </For>
-        </div>
-    );
+  function constructPhotoUrl(photo: string | null) {
+    if (!photo) {
+      // Return a 1x1 transparent gif
+      return "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+    }
+    console.log({ apiUrl, photo });
+    return `${apiUrl}/v1/${photo}`;
+  }
+
+  return (
+    <div
+      class="grid justify-center items-center gap-8 auto-cols-fr grid-flow-col px-12 relative"
+      data-component-name="Players"
+    >
+      <For each={players()}>
+        {(player, index) => (
+          <div
+            classList={{
+              "grid justify-center items-center gap-4 h-full rounded-lg bg-zinc-900 px-6 py-4 shadow-lg":
+                true,
+              "ring-4 ring-zinc-600": index() !== activePlayer()?.idx,
+              "ring-8 ring-teal-100": index() === activePlayer()?.idx,
+              "opacity-30 relative top-8": player.folded,
+            }}
+            data-index={index()}
+          >
+            <Show when={completed}>
+              <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
+                {completed.playerCards[index()]?.map((card, idx) => (
+                  <Card
+                    suite={card[0]}
+                    value={card[1]}
+                    key={idx}
+                    variant="small"
+                  />
+                ))}
+              </div>
+            </Show>
+            <Show when={!completed}>
+              <div class="grid max-w-36">
+                <Show when={showPhotos()}>
+                  <img
+                    src={constructPhotoUrl(player.photo)}
+                    alt={player.name}
+                    class="rounded-full w-20 h-20"
+                  />
+                </Show>
+              </div>
+            </Show>
+            <div class="grid justify-center items-center gap-4 relative">
+              <span class="text-2xl font-bold text-zinc-300 text-center">
+                {player.name}
+              </span>
+              <span class="text-xl font-bold text-teal-300 text-center">
+                {currency.format(player.balance)}
+              </span>
+
+              <Show when={index() === activePlayer()?.idx}>
+                <span
+                  classList={{
+                    "text-xl font-bold text-center absolute -bottom-16 w-full":
+                      true,
+                    "text-white": activePlayer()!.countdown > 5,
+                    "text-red-400 animate-pulse":
+                      activePlayer()!.countdown <= 5,
+                  }}
+                >
+                  {activePlayer()?.countdown}
+                </span>
+              </Show>
+            </div>
+          </div>
+        )}
+      </For>
+    </div>
+  );
 }
