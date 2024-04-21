@@ -11,6 +11,7 @@
   "proxy": "http://127.0.0.1:5000/",
   "license": "MIT",
   "devDependencies": {
+    "@types/chromecast-caf-receiver": "^6.0.13",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",
     "solid-devtools": "^0.29.2",
