@@ -9,6 +9,7 @@ export type GameClientState = {
     }[];
     pot: number;
     cards: [CardSuite, CardValue][];
+    ticker: string | null;
     completed: CompletedGame | null;
     lastUpdate: number;
 };
@@ -43,6 +44,7 @@ export function createClient() {
             players: [],
             pot: 0,
             cards: [],
+            ticker: null,
             completed: null,
             lastUpdate: 0,
         },

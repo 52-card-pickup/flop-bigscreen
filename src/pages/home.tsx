@@ -3,9 +3,11 @@ import { GameClientState, createClient } from "../signals/createClient";
 import { Players } from "../components/Players";
 import { CardTable } from "../components/CardTable";
 import { FlopContainer } from "../components/FlopContainer";
+import { Ticker } from "../components/Ticker";
 
 export default function Home() {
     const client = createClient();
+    const ticker = () => client().ticker;
     return (
         <section
             class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen overflow-auto"
@@ -20,6 +22,7 @@ export default function Home() {
             <Show when={client().state === "complete"}>
                 <RoundComplete client={client} />
             </Show>
+            <Ticker ticker={ticker} />
         </section>
     );
 }
