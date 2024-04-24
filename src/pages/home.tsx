@@ -10,7 +10,7 @@ export default function Home() {
     const ticker = () => client().ticker;
     return (
         <section
-            class="bg-zinc-900 text-gray-700 p-8 h-screen w-screen overflow-auto"
+            class="bg-zinc-900 text-gray-700 p-8 flex justify-center h-screen w-screen overflow-auto"
             data-component-name="Home"
         >
             <Show when={client().state === "waiting"}>

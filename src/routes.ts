@@ -15,6 +15,10 @@ export const routes: RouteDefinition[] = [
         component: TV,
     },
     {
+        path: '/big-screen/tv',
+        component: TV,
+    },
+    {
         path: '/about',
         component: lazy(() => import('./pages/about')),
         data: AboutData,
