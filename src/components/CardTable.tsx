@@ -12,7 +12,7 @@ export function CardTable({
 }) {
     return (
         <div
-            class="grid justify-center items-center"
+            class="grid justify-center items-center aspect-[21/9]"
             data-component-name="CardTable"
         >
             <div
@@ -23,7 +23,9 @@ export function CardTable({
             >
                 <For each={cards()}>
                     {([suite, value], index) => (
-                        <Card suite={suite} value={value} key={index()} />
+                        <div class="flex justify-center items-center">
+                        <Card suite={suite} value={value} />
+                        </div>
                     )}
                 </For>
             </div>
