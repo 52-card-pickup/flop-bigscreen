@@ -19,8 +19,10 @@ export type GameClientState = {
 export type CompletedGame = {
   winnerName: string | null;
   winningHand: string | null;
-  playerCards: [[CardSuite, CardValue], [CardSuite, CardValue]][];
+  playerCards: (PlayerHand | null)[];
 };
+
+type PlayerHand = [[CardSuite, CardValue], [CardSuite, CardValue]];
 
 export type CardSuite = "hearts" | "diamonds" | "clubs" | "spades";
 export type CardValue =

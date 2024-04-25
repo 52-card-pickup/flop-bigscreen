@@ -86,12 +86,14 @@ export function Players({
               <Show when={completed}>
                 <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
                   {completed.playerCards[index]?.map((card, idx) => (
-                    <Card
-                      suite={card[0]}
-                      value={card[1]}
-                      key={idx}
-                      variant="small"
-                    />
+                    <Show when={card}>
+                      <Card
+                        suite={card[0]}
+                        value={card[1]}
+                        key={idx}
+                        variant="small"
+                      />
+                    </Show>
                   ))}
                 </div>
               </Show>
