@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 
 export type GameClientState = {
   state: "offline" | "idle" | "waiting" | "playing" | "complete";
@@ -71,38 +71,41 @@ export function createClient() {
     { name: "game-client", equals: (a, b) => a.lastUpdate === b.lastUpdate }
   );
 
-  createEffect((cleanup: () => void) => {
-    if (cleanup) cleanup();
-    const abortController = new AbortController();
-    let timeout: number;
-    let data: GameClientState | null = null;
+  const abortController = new AbortController();
+  let timeout: number;
+  let maxWaitMs: number = 1000;
+  let data: GameClientState | null = null;
 
-    async function get() {
-      const requestUrl = data?.lastUpdate
-        ? `${url}?timeout=15000&since=${data.lastUpdate}`
-        : url;
-      const before = Date.now();
-      data = await fetch(requestUrl, {
-        signal: abortController.signal,
-      })
-        .then((res) => (res.ok ? res.json() : Promise.reject<null>(res)))
-        .catch(() => {
-          setState((prev) => ({ ...prev, state: "offline" }));
-          return null;
-        });
-      if (data && data.lastUpdate > state().lastUpdate) {
-        setState(data);
-      }
-      const elapsed = Date.now() - before;
-      timeout = setTimeout(get, Math.max(0, 1000 - elapsed));
+  async function get() {
+    const requestUrl = data?.lastUpdate
+      ? `${url}?timeout=15000&since=${data.lastUpdate}`
+      : url;
+
+    const before = Date.now();
+    data = await fetch(requestUrl, {
+      signal: abortController.signal,
+    })
+      .then((res) => (res.ok ? res.json() : Promise.reject<null>(res)))
+      .catch(() => {
+        setState((prev) => ({ ...prev, state: "offline" }));
+        maxWaitMs = Math.min(30000, maxWaitMs * 2);
+        console.error(`Failed to fetch game state, retrying in ${maxWaitMs}ms`);
+        return null;
+      });
+
+    if (data && data.lastUpdate > state().lastUpdate) {
+      maxWaitMs = 1000;
+      setState(data);
     }
+    const elapsed = Date.now() - before;
+    timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
+  }
 
-    get();
+  get();
 
-    return () => {
-      if (timeout) clearTimeout(timeout);
-      abortController.abort();
-    };
+  onCleanup(() => {
+    if (timeout) clearTimeout(timeout);
+    abortController.abort();
   });
 
   return () => state();
