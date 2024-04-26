@@ -13,6 +13,9 @@ export default function Home() {
       class="bg-zinc-900 text-gray-700 p-8 flex justify-center h-screen w-screen overflow-auto"
       data-component-name="Home"
     >
+      <Show when={client().state === "idle"}>
+        <Idle client={client} />
+      </Show>
       <Show when={client().state === "waiting"}>
         <Waiting client={client} />
       </Show>
@@ -24,6 +27,20 @@ export default function Home() {
       </Show>
       <Ticker ticker={ticker} />
     </section>
+  );
+}
+
+function Idle({ client }: { client: () => GameClientState }) {
+  const players = () => client().players;
+  return (
+    <FlopContainer>
+      <div class="grid justify-center items-center gap-4 h-96">
+        <h1 class="text-xl font-normal my-6 shadow-sm text-center animate-pulse text-zinc-50">
+          Connecting to game server...
+        </h1>
+      </div>
+      <Players players={players} />
+    </FlopContainer>
   );
 }
 
