@@ -57,7 +57,9 @@ export function apiURL() {
 }
 
 export function createClient() {
+  const query = new URLSearchParams(window.location.search);
   const url = import.meta.env.VITE_API_URL as string;
+
   const [state, setState] = createSignal<GameClientState>(
     {
       state: "idle",
@@ -101,7 +103,9 @@ export function createClient() {
     timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
   }
 
-  get();
+  if (!query.get("offline")) {
+    get();
+  }
 
   onCleanup(() => {
     if (timeout) clearTimeout(timeout);
