@@ -13,7 +13,7 @@ export function Players({
   completed,
 }: {
   players: () => GameClientState["players"];
-  completed?: CompletedGame;
+  completed?: () => CompletedGame;
 }) {
   const [activePlayer, setActivePlayer] = createSignal<{
     idx: number;
@@ -50,18 +50,6 @@ export function Players({
     }, 1000);
   });
 
-  const apiUrl = apiURL();
-  const showPhotos = () => players().some((p) => p.photo !== null);
-
-  function constructPhotoUrl(photo: string | null) {
-    if (!photo) {
-      // Return a 1x1 transparent gif
-      return "/empty-profile.jpg";
-    }
-    console.log({ apiUrl, photo });
-    return `${apiUrl}/v1/${photo}`;
-  }
-
   return (
     <div
       class="grid justify-center items-center gap-8 auto-cols-fr grid-flow-col px-12 relative"
@@ -69,7 +57,13 @@ export function Players({
     >
       <Index each={players()}>
         {(player, index) => (
-          <div class="grid grid-rows-[auto,1fr,auto] gap-4 justify-center">
+          <div
+            class="grid grid-rows-[auto,1fr,auto] justify-center relative"
+            classList={{
+              "gap-2": !!completed?.(),
+              "gap-4": !completed?.(),
+            }}
+          >
             <div
               class="grid justify-center items-center transform transition-all duration-300 ease-in-out"
               classList={{
@@ -95,56 +89,53 @@ export function Players({
                 }}
                 data-index={index}
               >
-                <Show when={completed}>
-                  <div class="grid justify-center items-center gap-4 grid-cols-2 max-w-36 place-self-center">
-                    {completed.playerCards[index]?.map((card, idx) => (
-                      <Show when={card}>
-                        <Card
-                          suite={card[0]}
-                          value={card[1]}
-                          key={idx}
-                          variant="small"
-                        />
-                      </Show>
-                    ))}
-                  </div>
-                </Show>
-                <Show when={!completed}>
-                  <div class="relative overflow-hidden rounded-full w-[calc(6vw+6vh)] h-[calc(6vw+6vh)]">
-                    <img
-                      src={constructPhotoUrl(player().photo)}
-                      alt={player().name}
-                      class="absolute top-0 left-0 w-full h-full object-cover"
-                    />
-                    <div
-                      class="absolute top-0 left-0 w-full h-full mix-blend-multiply"
-                      style={{
-                        // hwb(94deg 20% 40% / 80%)
-                        "background-color": `hwb(${
-                          Math.random() * 360
-                        }deg 20% 40% / 80%)`,
-                      }}
-                    ></div>
-                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-zinc-900/80 to-transparent"></div>
-                  </div>
-                </Show>
-                <div class="absolute grid justify-center items-center gap-4 h-8">
-                  <Show when={index === activePlayer()?.idx}>
-                    <span
-                      classList={{
-                        "text-xl font-semibold text-center absolute -bottom-16 w-full":
-                          true,
-                        "text-white": activePlayer()!.countdown > 5,
-                        "text-red-400 animate-pulse":
-                          activePlayer()!.countdown <= 5,
-                      }}
-                    >
-                      {activePlayer()?.countdown}
-                    </span>
-                  </Show>
+                <div class="relative overflow-hidden rounded-full w-[calc(6vw+6vh)] h-[calc(6vw+6vh)]">
+                  <img
+                    src={constructPhotoUrl(player().photo)}
+                    alt={player().name}
+                    class="absolute top-0 left-0 w-full h-full object-cover"
+                  />
+                  <div
+                    class="absolute top-0 left-0 w-full h-full mix-blend-multiply"
+                    style={{
+                      // hwb(94deg 20% 40% / 80%)
+                      "background-color": `hwb(${
+                        Math.random() * 360
+                      }deg 20% 40% / 80%)`,
+                    }}
+                  ></div>
+                  <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-zinc-900/80 to-transparent"></div>
                 </div>
               </div>
             </div>
+            <div class="absolute grid justify-center items-center gap-4 w-full h-8 bottom-4">
+              <Show when={index === activePlayer()?.idx}>
+                <span
+                  class="text-xl font-semibold text-center absolute -bottom-16 w-full xl:text-3xl"
+                  classList={{
+                    "text-white": activePlayer()!.countdown > 5,
+                    "text-red-400 animate-pulse":
+                      activePlayer()!.countdown <= 5,
+                  }}
+                >
+                  {activePlayer()?.countdown}
+                </span>
+              </Show>
+            </div>
+            <Show when={completed?.()}>
+              <div class="grid justify-center items-center gap-4 mt-2 grid-cols-2 max-w-36 place-self-center">
+                {completed().playerCards[index]?.map((card, idx) => (
+                  <Show when={card}>
+                    <Card
+                      suite={card[0]}
+                      value={card[1]}
+                      key={idx}
+                      variant="small"
+                    />
+                  </Show>
+                ))}
+              </div>
+            </Show>
             <PlayerName
               name={() => player().name}
               width="calc(6vw + 6vh)"
@@ -155,4 +146,14 @@ export function Players({
       </Index>
     </div>
   );
+}
+
+function constructPhotoUrl(photo: string | null) {
+  if (!photo) {
+    // Return a 1x1 transparent gif
+    return "/empty-profile.jpg";
+  }
+  const apiUrl = apiURL();
+  console.log({ apiUrl, photo });
+  return `${apiUrl}/v1/${photo}`;
 }

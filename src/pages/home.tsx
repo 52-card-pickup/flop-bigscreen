@@ -120,16 +120,15 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
 
   return (
     <FlopLayout cards={cards}>
-      <div></div>
-      <div class="grid w-full h-full relative">
-        <Show when={winner()}>
-          <div class="grid justify-center items-center gap-4 absolute w-full -top-12">
-            <h1 class="text-4xl font-bold my-0 p-0 shadow-sm text-center text-zinc-300">
-              {`${winner().name} wins with a ${winner().hand}`}
-            </h1>
-          </div>
-        </Show>
-        <Players players={players} completed={completed()} />
+      <Show when={winner()} fallback={<div></div>}>
+        <div class="grid justify-center items-center gap-4 place-self-end">
+          <h1 class="text-4xl font-bold my-0 pb-4 shadow-sm text-center text-zinc-300">
+            {`${winner().name} wins with a ${winner().hand}`}
+          </h1>
+        </div>
+      </Show>
+      <div class="grid w-full h-full">
+        <Players players={players} completed={completed} />
       </div>
     </FlopLayout>
   );
