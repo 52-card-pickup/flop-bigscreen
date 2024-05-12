@@ -7,6 +7,7 @@ export type GameClientState = {
     balance: number;
     folded: boolean;
     photo: string | null;
+    colorHue?: number | null;
     turnExpiresDt: number | null;
   }[];
   pot: number;

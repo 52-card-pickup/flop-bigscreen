@@ -1,4 +1,4 @@
-import { Index, Show, createEffect, createSignal } from "solid-js";
+import { Accessor, Index, Show, createEffect, createSignal } from "solid-js";
 import {
   CompletedGame,
   GameClientState,
@@ -89,23 +89,7 @@ export function Players({
                 }}
                 data-index={index}
               >
-                <div class="relative overflow-hidden rounded-full w-[calc(6vw+6vh)] h-[calc(6vw+6vh)]">
-                  <img
-                    src={constructPhotoUrl(player().photo)}
-                    alt={player().name}
-                    class="absolute top-0 left-0 w-full h-full object-cover"
-                  />
-                  <div
-                    class="absolute top-0 left-0 w-full h-full mix-blend-multiply"
-                    style={{
-                      // hwb(94deg 20% 40% / 80%)
-                      "background-color": `hwb(${
-                        Math.random() * 360
-                      }deg 20% 40% / 80%)`,
-                    }}
-                  ></div>
-                  <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-zinc-900/80 to-transparent"></div>
-                </div>
+                <PlayerImage player={player} />
               </div>
             </div>
             <div class="absolute grid justify-center items-center gap-4 w-full h-8 bottom-4">
@@ -122,7 +106,7 @@ export function Players({
                 </span>
               </Show>
             </div>
-            <Show when={completed?.()}>
+            <Show when={completed?.() && !player().folded}>
               <div class="grid justify-center items-center gap-4 mt-2 grid-cols-2 max-w-36 place-self-center">
                 {completed().playerCards[index]?.map((card, idx) => (
                   <Show when={card}>
@@ -148,9 +132,35 @@ export function Players({
   );
 }
 
+function PlayerImage({
+  player,
+}: {
+  player: Accessor<GameClientState["players"][number]>;
+}) {
+  return (
+    <div class="relative overflow-hidden rounded-full w-[calc(6vw+6vh)] h-[calc(6vw+6vh)]">
+      <img
+        src={constructPhotoUrl(player().photo)}
+        alt={player().name}
+        class="absolute top-0 left-0 w-full h-full object-cover"
+      />
+      <Show when={player().colorHue || player().colorHue === 0}>
+        <div
+          class="absolute top-0 left-0 w-full h-full mix-blend-multiply"
+          style={{
+            "background-color": `hwb(${
+              player().colorHue % 360
+            }deg 20% 40% / 80%)`,
+          }}
+        ></div>
+      </Show>
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-zinc-900/80 to-transparent"></div>
+    </div>
+  );
+}
+
 function constructPhotoUrl(photo: string | null) {
   if (!photo) {
-    // Return a 1x1 transparent gif
     return "/empty-profile.jpg";
   }
   const apiUrl = apiURL();

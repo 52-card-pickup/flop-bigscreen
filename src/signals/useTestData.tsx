@@ -50,6 +50,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 1000,
           folded: false,
           photo: null,
+          colorHue: 0,
           turnExpiresDt: null,
         },
         {
@@ -57,6 +58,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 1000,
           folded: false,
           photo: null,
+          colorHue: 120,
           turnExpiresDt: Date.now() + 30000,
         },
         {
@@ -64,6 +66,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 1000,
           folded: false,
           photo: null,
+          colorHue: 240,
           turnExpiresDt: null,
         },
         {
@@ -71,6 +74,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 1000,
           folded: false,
           photo: null,
+          colorHue: 60,
           turnExpiresDt: null,
         },
       ],
@@ -91,6 +95,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 1255,
           folded: false,
           photo: null,
+          colorHue: 120,
           turnExpiresDt: null,
         },
         {
@@ -98,6 +103,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 745,
           folded: false,
           photo: null,
+          colorHue: 0,
           turnExpiresDt: null,
         },
       ],
