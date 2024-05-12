@@ -51,15 +51,28 @@ function Idle({ client }: { client: () => GameClientState }) {
 function Waiting({ client }: { client: () => GameClientState }) {
   const players = () => client().players;
   const cards = () => [];
-  const overlayMessage = () => [
-    "Waiting for players to join...",
-    `${players().length} players joined`,
-  ];
+  const overlayMessage = () =>
+    players().length
+      ? [
+          "Waiting for more players to join...",
+          `${players().length} players joined`,
+        ]
+      : "Waiting for players to join...";
   return (
     <FlopLayout cards={cards} overlayMessage={overlayMessage}>
       <div></div>
       <div>
-        <Players players={players} />
+        <Show when={players().length > 0}>
+          <Players players={players} />
+        </Show>
+        <Show when={players().length === 0}>
+          <p class="text-base text-center xl:text-3xl xl:pb-4">
+            Grab your friends and join the game!
+          </p>
+          <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
+            flop.party
+          </h3>
+        </Show>
       </div>
     </FlopLayout>
   );
