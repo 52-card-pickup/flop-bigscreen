@@ -56,7 +56,7 @@ function OverlayMessage(props: { message?: Accessor<string | string[]> }) {
   if (!overlayMessageLines()) return null;
 
   return (
-    <div class="absolute inset-0 flex items-center justify-center flex-col gap-1 mt-16">
+    <div class="absolute inset-0 flex items-center justify-center flex-col gap-1 mt-16 text-center">
       <h1 class="text-4xl font-semibold text-zinc-50/75 bg-zinc-900/40 px-8 py-6 rounded-2xl">
         {overlayMessageLines().header}
       </h1>
