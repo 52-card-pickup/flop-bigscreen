@@ -1,15 +1,17 @@
 import { children } from "solid-js";
 
 export function FlopContainer(props) {
-    const safeChildren = children(() => props.children);
+  const safeChildren = children(() => props.children);
 
-    return (
-        <div
-            class="flex flex-col justify-center items-center gap-4"
-            data-component-name="FlopContainer"
-        >
-            <h1 class="text-4xl font-bold my-6 shadow-sm text-center">flop.</h1>
-            {safeChildren()}
-        </div>
-    );
+  return (
+    <div
+      class="grid justify-center items-center gap-4 relative"
+      data-component-name="FlopContainer"
+    >
+      <h1 class="absolute left-8 bottom-6 text-3xl font-bold shadow-sm text-center select-none">
+        flop.
+      </h1>
+      {safeChildren()}
+    </div>
+  );
 }
