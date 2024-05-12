@@ -6,7 +6,9 @@ import { FlopLayout } from "../components/FlopLayout";
 import { useTestData } from "../signals/useTestData";
 
 export default function Home() {
-  const client = createClient();
+  const testState = useTestData();
+  const initialState = import.meta.env.MODE === "development" ? testState : {};
+  const client = createClient(initialState);
   const ticker = () => client().ticker;
   return (
     <section
