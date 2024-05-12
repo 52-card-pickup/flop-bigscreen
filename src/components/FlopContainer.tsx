@@ -8,7 +8,7 @@ export function FlopContainer(props) {
       class="grid justify-center items-center gap-4 relative"
       data-component-name="FlopContainer"
     >
-      <h1 class="absolute left-8 bottom-6 text-3xl font-bold shadow-sm text-center select-none">
+      <h1 class="absolute left-8 bottom-6 text-3xl font-bold shadow-sm text-center select-none xl:text-5xl">
         flop.
       </h1>
       {safeChildren()}
