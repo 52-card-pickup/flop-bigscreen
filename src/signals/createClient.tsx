@@ -56,7 +56,7 @@ export function apiURL() {
   throw new Error("Invalid API URL");
 }
 
-export function createClient() {
+export function createClient(defaultState: Partial<GameClientState> = {}) {
   const query = new URLSearchParams(window.location.search);
   const url = import.meta.env.VITE_API_URL as string;
 
@@ -69,6 +69,7 @@ export function createClient() {
       ticker: null,
       completed: null,
       lastUpdate: 0,
+      ...defaultState,
     },
     { name: "game-client", equals: (a, b) => a.lastUpdate === b.lastUpdate }
   );
