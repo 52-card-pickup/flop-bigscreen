@@ -57,7 +57,7 @@ export function useTestData(): Partial<GameClientState> {
           balance: 1000,
           folded: false,
           photo: null,
-          turnExpiresDt: null,
+          turnExpiresDt: Date.now() + 30000,
         },
         {
           name: "Charlie",
