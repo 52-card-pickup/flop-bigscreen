@@ -95,7 +95,7 @@ export function Players({
             <div class="absolute grid justify-center items-center gap-4 w-full h-8 bottom-4">
               <Show when={index === activePlayer()?.idx}>
                 <span
-                  class="text-xl font-semibold text-center absolute -bottom-16 w-full xl:text-3xl"
+                  class="text-xl font-semibold text-center absolute -bottom-16 w-full xl:text-2xl"
                   classList={{
                     "text-white": activePlayer()!.countdown > 5,
                     "text-red-400 animate-pulse":
@@ -164,6 +164,5 @@ function constructPhotoUrl(photo: string | null) {
     return "/empty-profile.jpg";
   }
   const apiUrl = apiURL();
-  console.log({ apiUrl, photo });
   return `${apiUrl}/v1/${photo}`;
 }

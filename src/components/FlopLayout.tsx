@@ -14,7 +14,7 @@ export function FlopLayout(props: {
 
   return (
     <FlopContainer>
-      <div class="grid justify-center items-center gap-0 grid-cols-[1fr,14fr,1fr] grid-rows-[1fr,5fr,4fr] w-screen h-screen">
+      <div class="grid justify-center items-center gap-0 grid-cols-[1fr,14fr,1fr] grid-rows-[1fr,5fr,5fr] w-screen h-screen">
         <div class="grid justify-center items-center gap-4 bg-zinc-800/0 rounded-lg w-full h-full"></div>
         <div class="grid justify-center items-center gap-4 h-full">
           {sections()[0]}
