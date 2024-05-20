@@ -90,14 +90,20 @@ function RoundOverview({ client }: { client: () => GameClientState }) {
   const pot = () => client().pot;
 
   return (
-    <FlopLayout cards={cards}>
-      <div></div>
-      <div class="grid w-full h-full relative">
-        <div class="grid justify-center items-center gap-4 absolute w-full -top-12">
-          <span class="text-4xl font-bold mb-2 text-zinc-50 pb-2">
-            {currency.format(pot())}
-          </span>
+    <FlopLayout
+      cards={cards}
+      overlayElement={() => (
+        <div class="grid w-full h-full relative">
+          <div class="grid justify-center items-center gap-4 absolute w-full bottom-0">
+            <span class="text-3xl font-semibold text-zinc-50 py-3">
+              {currency.format(pot())}
+            </span>
+          </div>
         </div>
+      )}
+    >
+      <div></div>
+      <div class="grid w-full h-full">
         <Players players={players} />
       </div>
     </FlopLayout>
@@ -119,14 +125,19 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
   };
 
   return (
-    <FlopLayout cards={cards}>
-      <Show when={winner()} fallback={<div></div>}>
-        <div class="grid justify-center items-center gap-4 place-self-end">
-          <h1 class="text-3xl font-bold my-0 pb-4 shadow-sm text-center text-zinc-300">
-            {`${winner().name} wins with a ${winner().hand}`}
-          </h1>
-        </div>
-      </Show>
+    <FlopLayout
+      cards={cards}
+      overlayElement={() => (
+        <Show when={winner()} fallback={<div></div>}>
+          <div class="grid justify-center items-center gap-4 absolute w-full top-0">
+            <h1 class="text-4xl font-semibold py-6 shadow-sm text-center text-green-50">
+              {`${winner().name} wins with a ${winner().hand}`}
+            </h1>
+          </div>
+        </Show>
+      )}
+    >
+      <div></div>
       <div class="grid w-full h-full">
         <Players players={players} completed={completed} />
       </div>
