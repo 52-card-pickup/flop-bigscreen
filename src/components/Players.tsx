@@ -92,7 +92,7 @@ export function Players({
                 <PlayerImage player={player} />
               </div>
             </div>
-            <div class="absolute grid justify-center items-center gap-4 w-full h-8 bottom-4">
+            <div class="absolute grid justify-center items-center gap-4 w-full h-8 bottom-8">
               <Show when={index === activePlayer()?.idx}>
                 <span
                   class="text-xl font-semibold text-center absolute -bottom-16 w-full xl:text-2xl"

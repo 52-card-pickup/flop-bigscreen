@@ -1,4 +1,4 @@
-import { Accessor, For, JSX, children } from "solid-js";
+import { Accessor, For, JSX, Show, children } from "solid-js";
 import { CardSuite, CardValue } from "../signals/createClient";
 import { CardTable } from "./CardTable";
 import { FlopContainer } from "./FlopContainer";
@@ -7,6 +7,7 @@ import { memo } from "solid-js/web";
 export function FlopLayout(props: {
   cards: () => [CardSuite, CardValue][];
   overlayMessage?: Accessor<string | string[]>;
+  overlayElement?: Accessor<JSX.Element>;
   children: [JSX.Element, JSX.Element];
 }) {
   const safeChildren = children(() => props.children);
@@ -14,7 +15,7 @@ export function FlopLayout(props: {
 
   return (
     <FlopContainer>
-      <div class="grid justify-center items-center gap-0 grid-cols-[1fr,14fr,1fr] grid-rows-[1fr,5fr,5fr] w-screen h-screen">
+      <div class="grid justify-center items-center gap-0 grid-cols-[1fr,14fr,1fr] grid-rows-[1fr,4fr,5fr] w-screen h-screen">
         <div class="grid justify-center items-center gap-4 bg-zinc-800/0 rounded-lg w-full h-full"></div>
         <div class="grid justify-center items-center gap-4 h-full">
           {sections()[0]}
@@ -22,9 +23,10 @@ export function FlopLayout(props: {
         <div class="grid justify-center items-center gap-4 bg-zinc-800/0 rounded-lg w-full h-full"></div>
 
         <div class="grid justify-center items-center gap-4 bg-zinc-800/0 rounded-lg w-full h-full"></div>
-        <div class="relative">
+        <div class="grid relative">
           <CardTable cards={props.cards} variant="large" />
           <OverlayMessage message={props.overlayMessage} />
+          <Show when={props.overlayElement}>{props.overlayElement()}</Show>
         </div>
         <div class="grid justify-center items-center gap-4 bg-zinc-800/0 rounded-lg w-full h-full"></div>
 
