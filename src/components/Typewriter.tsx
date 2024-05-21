@@ -1,4 +1,4 @@
-import { onMount } from "solid-js";
+import { children, createEffect, createSignal, onMount } from "solid-js";
 import TypewriterCore from "typewriter-effect/dist/core";
 import type {
   TypewriterClass,
@@ -20,13 +20,16 @@ interface TypewriterProps extends PropOptions {
 }
 
 export function Typewriter(props: TypewriterProps) {
+  const [instance, setInstance] = createSignal<TypewriterClass | null>(null);
+  const resolved = children(() => props.children);
+
   let elem: HTMLSpanElement;
 
   onMount(() => {
     const { onInit, children, ...remaining } = props;
     const options: Partial<PropOptions> = remaining;
     const values = props.children
-      ? [props.children]
+      ? [resolved().toString()]
       : props.strings
       ? props.strings
       : null;
@@ -44,6 +47,19 @@ export function Typewriter(props: TypewriterProps) {
         } satisfies TypewriterOptions);
 
     onInit?.(typewriter);
+    setInstance(typewriter);
+  });
+
+  createEffect(() => {
+    const typewriter = instance();
+    if (!typewriter) return;
+    const children = resolved();
+    typewriter
+      .stop()
+      .deleteAll()
+      .typeString(children.toString())
+      .pauseFor(500)
+      .start();
   });
 
   return <span ref={elem}></span>;
