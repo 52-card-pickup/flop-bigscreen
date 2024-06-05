@@ -20,8 +20,8 @@ interface TypewriterProps extends PropOptions {
 }
 
 export function Typewriter(props: TypewriterProps) {
-  const [instance, setInstance] = createSignal<TypewriterClass | null>(null);
   const resolved = children(() => props.children);
+  const [instance, setInstance] = createSignal<TypewriterClass | null>(null);
 
   let elem: HTMLSpanElement;
 
@@ -54,6 +54,7 @@ export function Typewriter(props: TypewriterProps) {
     const typewriter = instance();
     if (!typewriter) return;
     const children = resolved();
+    if (!children) return;
     typewriter
       .stop()
       .deleteAll()

@@ -4,6 +4,7 @@ import { Players } from "../components/Players";
 import { Ticker } from "../components/Ticker";
 import { FlopLayout } from "../components/FlopLayout";
 import { useTestData } from "../signals/useTestData";
+import { Typewriter, TypewriterClass } from "../components/Typewriter";
 
 export default function Home() {
   const testState = useTestData();
@@ -58,6 +59,18 @@ function Waiting({ client }: { client: () => GameClientState }) {
           `${players().length} players joined`,
         ]
       : "Waiting for players to join...";
+
+  function startTypewriter(typewriter: TypewriterClass) {
+    typewriter
+      .pauseFor(500)
+      .typeString("flop.party")
+      .pauseFor(10_000)
+      .deleteAll()
+      .typeString("https://flop.party")
+      .pauseFor(5_000)
+      .deleteAll()
+      .start();
+  }
   return (
     <FlopLayout cards={cards} overlayMessage={overlayMessage}>
       <div></div>
@@ -70,7 +83,9 @@ function Waiting({ client }: { client: () => GameClientState }) {
             Grab your friends and join the game!
           </p>
           <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
-            flop.party
+            <Typewriter autoStart={false} onInit={startTypewriter}>
+              flop.party
+            </Typewriter>
           </h3>
         </Show>
       </div>
@@ -131,7 +146,9 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
         <Show when={winner()} fallback={<div></div>}>
           <div class="grid justify-center items-center gap-4 absolute w-full top-0">
             <h1 class="text-4xl font-semibold py-6 shadow-sm text-center text-green-50">
-              {`${winner().name} wins with a ${winner().hand}`}
+              <Typewriter loop={false}>
+                {`${winner().name} wins with a ${winner().hand}`}
+              </Typewriter>
             </h1>
           </div>
         </Show>
