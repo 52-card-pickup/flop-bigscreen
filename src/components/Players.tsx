@@ -161,7 +161,7 @@ function PlayerImage({
 
 function constructPhotoUrl(photo: string | null) {
   if (!photo) {
-    return "/empty-profile.jpg";
+    return "empty-profile.jpg";
   }
   const apiUrl = apiURL();
   return `${apiUrl}/v1/${photo}`;
