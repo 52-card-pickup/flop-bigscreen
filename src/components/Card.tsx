@@ -26,7 +26,7 @@ export function Card({
   }
   return (
     <img
-      src={`/cards/${suite}_${value}.svg`}
+      src={`cards/${suite}_${value}.svg`}
       alt={`${value} of ${suite}`}
       class="h-full"
       data-key={key}
@@ -74,7 +74,7 @@ export function FlipCard({
 export function CardBackFace({ key }: { key?: number }) {
   return (
     <img
-      src="/cards/back_blue2.svg"
+      src="cards/back_blue2.svg"
       alt="card back"
       class="h-full"
       data-key={key}
