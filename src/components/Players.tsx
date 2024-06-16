@@ -68,7 +68,7 @@ export function Players({
               class="grid justify-center items-center transform transition-all duration-300 ease-in-out"
               classList={{
                 "translate-y-0": !player().folded,
-                "translate-y-24 opacity-50": player().folded,
+                "translate-y-8 opacity-50": player().folded,
               }}
             >
               <span class="text-2xl font-semibold text-teal-300 text-center">
