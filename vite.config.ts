@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import solidPlugin from 'vite-plugin-solid';
+import { defineConfig } from "vite";
+import solidPlugin from "vite-plugin-solid";
 
 export default defineConfig({
   plugins: [
@@ -13,10 +13,12 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/api': 'http://127.0.0.1:5000',
-    }
+      "/api": "http://127.0.0.1:5000",
+    },
   },
   build: {
-    target: 'esnext',
+    target: "esnext",
   },
+  //@ts-expect-error
+  base: process.env.BASE_URL || undefined,
 });
