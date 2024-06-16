@@ -1,4 +1,5 @@
 import { CardSuite, CardValue } from "../signals/createClient";
+import { Accessor } from "solid-js";
 
 export function Card({
   suite,
@@ -27,6 +28,54 @@ export function Card({
     <img
       src={`cards/${suite}_${value}.svg`}
       alt={`${value} of ${suite}`}
+      class="h-full"
+      data-key={key}
+    />
+  );
+}
+
+export function FlipCard({
+  suite,
+  value,
+  key,
+  flipped,
+}: {
+  suite: CardSuite;
+  value: CardValue;
+  key?: number;
+  flipped?: Accessor<boolean>;
+}) {
+  return (
+    <div class="flex justify-center items-center relative h-full group [perspective:1000px]">
+      <div
+        classList={{
+          "absolute top-0 left-0 w-full h-full transition delay-500 duration-1000 ease-in-out [backface-visibility:hidden]":
+            true,
+          "[transform:rotateY(0deg)]": !flipped(),
+          "[transform:rotateY(180deg)]": flipped(),
+        }}
+      >
+        <Card suite={suite} value={value} key={key} />
+      </div>
+      <div
+        classList={{
+          "relative top-0 left-0 w-full h-full transition delay-500 duration-1000 ease-in-out [backface-visibility:hidden]":
+            true,
+          "[transform:rotateY(180deg)]": !flipped(),
+          "[transform:rotateY(360deg)]": flipped(),
+        }}
+      >
+        <CardBackFace key={key} />
+      </div>
+    </div>
+  );
+}
+
+export function CardBackFace({ key }: { key?: number }) {
+  return (
+    <img
+      src="cards/back_blue2.svg"
+      alt="card back"
       class="h-full"
       data-key={key}
     />

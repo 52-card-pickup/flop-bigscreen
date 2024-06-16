@@ -1,16 +1,19 @@
 import { Show } from "solid-js";
 import { GameClientState, createClient } from "../signals/createClient";
 import { Players } from "../components/Players";
-import { CardTable } from "../components/CardTable";
-import { FlopContainer } from "../components/FlopContainer";
 import { Ticker } from "../components/Ticker";
+import { FlopLayout } from "../components/FlopLayout";
+import { useTestData } from "../signals/useTestData";
+import { Typewriter, TypewriterClass } from "../components/Typewriter";
 
 export default function Home() {
-  const client = createClient();
+  const testState = useTestData();
+  const initialState = import.meta.env.MODE === "development" ? testState : {};
+  const client = createClient(initialState);
   const ticker = () => client().ticker;
   return (
     <section
-      class="bg-zinc-900 text-gray-700 p-8 flex justify-center h-screen w-screen overflow-auto"
+      class="bg-zinc-900 text-gray-700 grid justify-center h-screen w-screen overflow-auto"
       data-component-name="Home"
     >
       <Show when={client().state === "idle"}>
@@ -31,48 +34,62 @@ export default function Home() {
 }
 
 function Idle({ client }: { client: () => GameClientState }) {
-  const players = () => client().players;
   return (
-    <FlopContainer>
-      <div class="grid justify-center items-center gap-4 h-96">
-        <h1 class="text-xl font-normal my-6 shadow-sm text-center animate-pulse text-zinc-50">
-          Connecting to game server...
-        </h1>
+    <FlopLayout cards={() => []}>
+      <div></div>
+      <div>
+        <p class="text-base text-center xl:text-3xl xl:pb-4">
+          Grab your friends and join the game!
+        </p>
+        <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
+          flop.party
+        </h3>
       </div>
-      <Players players={players} />
-    </FlopContainer>
+    </FlopLayout>
   );
 }
 
 function Waiting({ client }: { client: () => GameClientState }) {
   const players = () => client().players;
+  const cards = () => [];
+  const overlayMessage = () =>
+    players().length
+      ? [
+          "Waiting for more players to join...",
+          `${players().length} players joined`,
+        ]
+      : "Waiting for players to join...";
+
+  function startTypewriter(typewriter: TypewriterClass) {
+    typewriter
+      .pauseFor(500)
+      .typeString("flop.party")
+      .pauseFor(10_000)
+      .deleteAll()
+      .typeString("https://flop.party")
+      .pauseFor(5_000)
+      .deleteAll()
+      .start();
+  }
   return (
-    <FlopContainer>
-      <div class="grid justify-center items-center gap-4 h-96">
+    <FlopLayout cards={cards} overlayMessage={overlayMessage}>
+      <div></div>
+      <div>
+        <Show when={players().length > 0}>
+          <Players players={players} />
+        </Show>
         <Show when={players().length === 0}>
-          <h1 class="text-4xl font-bold my-6 shadow-sm text-center animate-pulse text-zinc-50">
-            Waiting for players to join...
-          </h1>
-        </Show>
-        <Show when={players().length === 1}>
-          <h1 class="text-4xl font-bold my-6 shadow-sm text-center animate-pulse text-zinc-50">
-            {players().length} player has joined.
-          </h1>
-          <h2 class="text-2xl font-bold my-0 p-0 shadow-sm text-center text-zinc-300">
-            Waiting for more players...
-          </h2>
-        </Show>
-        <Show when={players().length > 1}>
-          <h1 class="text-4xl font-bold my-6 shadow-sm text-center text-zinc-50">
-            {players().length} players have joined.
-          </h1>
-          <h2 class="text-2xl font-bold my-0 p-0 shadow-sm text-center text-zinc-300">
-            Tap "Start Game" to begin.
-          </h2>
+          <p class="text-base text-center xl:text-3xl xl:pb-4">
+            Grab your friends and join the game!
+          </p>
+          <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
+            <Typewriter autoStart={false} onInit={startTypewriter}>
+              flop.party
+            </Typewriter>
+          </h3>
         </Show>
       </div>
-      <Players players={players} />
-    </FlopContainer>
+    </FlopLayout>
   );
 }
 
@@ -88,15 +105,23 @@ function RoundOverview({ client }: { client: () => GameClientState }) {
   const pot = () => client().pot;
 
   return (
-    <FlopContainer>
-      <CardTable cards={cards} />
-      <div class="grid justify-center items-center gap-4">
-        <span class="text-4xl font-bold my-2 text-zinc-50 py-2">
-          {currency.format(pot())}
-        </span>
+    <FlopLayout
+      cards={cards}
+      overlayElement={() => (
+        <div class="grid w-full h-full relative">
+          <div class="grid justify-center items-center gap-4 absolute w-full bottom-0">
+            <span class="text-3xl font-semibold text-zinc-50 py-3">
+              {currency.format(pot())}
+            </span>
+          </div>
+        </div>
+      )}
+    >
+      <div></div>
+      <div class="grid w-full h-full">
+        <Players players={players} />
       </div>
-      <Players players={players} />
-    </FlopContainer>
+    </FlopLayout>
   );
 }
 
@@ -115,18 +140,24 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
   };
 
   return (
-    <FlopContainer>
-      <div class="grid justify-center items-center gap-8 place-self-center mb-4">
-        <Show when={winner()}>
-          <h1 class="text-4xl font-bold my-0 p-0 shadow-sm text-center text-zinc-300">
-            {`${winner().name} wins with a ${winner().hand}`}
-          </h1>
+    <FlopLayout
+      cards={cards}
+      overlayElement={() => (
+        <Show when={winner()} fallback={<div></div>}>
+          <div class="grid justify-center items-center gap-4 absolute w-full top-0">
+            <h1 class="text-4xl font-semibold py-6 shadow-sm text-center text-green-50">
+              <Typewriter loop={false}>
+                {`${winner().name} wins with a ${winner().hand}`}
+              </Typewriter>
+            </h1>
+          </div>
         </Show>
-        <div class="grid justify-center items-center gap-4 w-2/3 justify-self-center">
-          <CardTable cards={cards} variant="small" />
-        </div>
+      )}
+    >
+      <div></div>
+      <div class="grid w-full h-full">
+        <Players players={players} completed={completed} />
       </div>
-      <Players players={players} completed={completed()} />
-    </FlopContainer>
+    </FlopLayout>
   );
 }

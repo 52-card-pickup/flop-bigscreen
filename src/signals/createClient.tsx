@@ -7,6 +7,7 @@ export type GameClientState = {
     balance: number;
     folded: boolean;
     photo: string | null;
+    colorHue?: number | null;
     turnExpiresDt: number | null;
   }[];
   pot: number;
@@ -56,8 +57,10 @@ export function apiURL() {
   throw new Error("Invalid API URL");
 }
 
-export function createClient() {
+export function createClient(defaultState: Partial<GameClientState> = {}) {
+  const query = new URLSearchParams(window.location.search);
   const url = import.meta.env.VITE_API_URL as string;
+
   const [state, setState] = createSignal<GameClientState>(
     {
       state: "idle",
@@ -67,6 +70,7 @@ export function createClient() {
       ticker: null,
       completed: null,
       lastUpdate: 0,
+      ...defaultState,
     },
     { name: "game-client", equals: (a, b) => a.lastUpdate === b.lastUpdate }
   );
@@ -101,7 +105,9 @@ export function createClient() {
     timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
   }
 
-  get();
+  if (!query.get("offline")) {
+    get();
+  }
 
   onCleanup(() => {
     if (timeout) clearTimeout(timeout);
