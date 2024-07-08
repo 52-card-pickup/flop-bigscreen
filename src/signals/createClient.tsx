@@ -5,6 +5,7 @@ export type GameClientState = {
   players: {
     name: string;
     balance: number;
+    emoji: string | null;
     folded: boolean;
     photo: string | null;
     colorHue?: number | null;

@@ -7,6 +7,7 @@ import {
 import { currency } from "../pages/home";
 import { Card } from "./Card";
 import { PlayerName } from "./PlayerName";
+import { Transition } from "solid-transition-group";
 
 export function Players({
   players,
@@ -90,6 +91,7 @@ export function Players({
                 data-index={index}
               >
                 <PlayerImage player={player} />
+                <PlayerEmoji player={player} />
               </div>
             </div>
             <div class="absolute grid justify-center items-center gap-4 w-full h-8 bottom-8">
@@ -156,6 +158,29 @@ function PlayerImage({
       </Show>
       <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-zinc-900/80 to-transparent"></div>
     </div>
+  );
+}
+
+function PlayerEmoji({
+  player,
+}: {
+  player: Accessor<GameClientState["players"][number]>;
+}) {
+  return (
+    <Transition
+      enterActiveClass="transform transition duration-300 ease-in-out"
+      enterClass="translate-y-[20px] opacity-0"
+      enterToClass="translate-y-0 opacity-100"
+      exitActiveClass="transform transition duration-500 ease-in-out"
+      exitClass="opacity-100"
+      exitToClass="opacity-0"
+    >
+      <Show when={player().emoji}>
+        <div class="absolute top-0 right-0 w-1/3 h-1/3 flex justify-center items-center text-4xl">
+          {player().emoji}
+        </div>
+      </Show>
+    </Transition>
   );
 }
 
