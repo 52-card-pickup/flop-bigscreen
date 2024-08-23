@@ -5,6 +5,7 @@ export type GameClientState = {
   players: {
     name: string;
     balance: number;
+    emoji: string | null;
     folded: boolean;
     photo: string | null;
     colorHue?: number | null;
@@ -75,7 +76,7 @@ export function createClient(defaultState: Partial<GameClientState> = {}) {
     { name: "game-client", equals: (a, b) => a.lastUpdate === b.lastUpdate }
   );
 
-  const abortController = new AbortController();
+  let abortController = new AbortController();
   let timeout: number;
   let maxWaitMs: number = 1000;
   let data: GameClientState | null = null;
@@ -90,10 +91,17 @@ export function createClient(defaultState: Partial<GameClientState> = {}) {
       signal: abortController.signal,
     })
       .then((res) => (res.ok ? res.json() : Promise.reject<null>(res)))
-      .catch(() => {
+      .catch((e) => {
+if (e instanceof Error && e.name === "AbortError") {
+          return null;
+        }
+
         setState((prev) => ({ ...prev, state: "offline" }));
         maxWaitMs = Math.min(30000, maxWaitMs * 2);
-        console.error(`Failed to fetch game state, retrying in ${maxWaitMs}ms`);
+        console.error(
+          `Failed to fetch game state, retrying in ${maxWaitMs}ms`,
+          e
+        );
         return null;
       });
 
@@ -105,13 +113,39 @@ export function createClient(defaultState: Partial<GameClientState> = {}) {
     timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
   }
 
+  function cancel() {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    abortController.abort();
+  }
+
+  function reset() {
+    cancel();
+    timeout = 0;
+    abortController = new AbortController();
+    maxWaitMs = 1000;
+    get();
+  }
+
+  function onVisibilityChange() {
+    if (document.hidden) {
+      cancel();
+      return;
+    }
+    console.log("Document is now visible, refetching game state");
+    reset();
+  }
+
   if (!query.get("offline")) {
     get();
   }
 
+  document.addEventListener("visibilitychange", onVisibilityChange);
+
   onCleanup(() => {
-    if (timeout) clearTimeout(timeout);
-    abortController.abort();
+    cancel();
+    document.removeEventListener("visibilitychange", onVisibilityChange);
   });
 
   return () => state();

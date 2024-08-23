@@ -14,6 +14,7 @@ export function useTestData(): Partial<GameClientState> {
       players: [
         {
           name: "Alice",
+          emoji: null,
           balance: 1000,
           folded: false,
           photo: null,
@@ -21,6 +22,7 @@ export function useTestData(): Partial<GameClientState> {
         },
         {
           name: "Bob",
+          emoji: null,
           balance: 1000,
           folded: false,
           photo: null,
@@ -29,6 +31,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "Charlie",
           balance: 1000,
+          emoji: null,
           folded: false,
           photo: null,
           turnExpiresDt: null,
@@ -36,6 +39,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "David",
           balance: 1000,
+          emoji: null,
           folded: false,
           photo: null,
           turnExpiresDt: null,
@@ -48,6 +52,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "Alice",
           balance: 1000,
+          emoji: null,
           folded: false,
           photo: null,
           colorHue: 0,
@@ -56,6 +61,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "Bob",
           balance: 1000,
+          emoji: null,
           folded: false,
           photo: null,
           colorHue: 120,
@@ -64,6 +70,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "Charlie",
           balance: 1000,
+          emoji: null,
           folded: false,
           photo: null,
           colorHue: 240,
@@ -72,6 +79,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "David",
           balance: 1000,
+          emoji: null,
           folded: false,
           photo: null,
           colorHue: 60,
@@ -93,6 +101,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "Bob",
           balance: 1255,
+          emoji: null,
           folded: false,
           photo: null,
           colorHue: 120,
@@ -101,6 +110,7 @@ export function useTestData(): Partial<GameClientState> {
         {
           name: "Ann",
           balance: 745,
+          emoji: null,
           folded: false,
           photo: null,
           colorHue: 0,
