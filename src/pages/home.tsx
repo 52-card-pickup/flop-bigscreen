@@ -5,11 +5,15 @@ import { Ticker } from "../components/Ticker";
 import { FlopLayout } from "../components/FlopLayout";
 import { useTestData } from "../signals/useTestData";
 import { Typewriter, TypewriterClass } from "../components/Typewriter";
+import { useParams } from "@solidjs/router";
 
 export default function Home() {
+  const params = useParams<{
+    roomCode?: string;
+  }>();
   const testState = useTestData();
   const initialState = import.meta.env.MODE === "development" ? testState : {};
-  const client = createClient(initialState);
+  const client = createClient(params.roomCode, initialState);
   const ticker = () => client().ticker;
   return (
     <section
@@ -35,7 +39,7 @@ export default function Home() {
 
 function Idle({ client }: { client: () => GameClientState }) {
   return (
-    <FlopLayout cards={() => []}>
+    <FlopLayout cards={() => []} roomCode={() => client().roomCode}>
       <div></div>
       <div>
         <p class="text-base text-center xl:text-3xl xl:pb-4">
@@ -72,7 +76,11 @@ function Waiting({ client }: { client: () => GameClientState }) {
       .start();
   }
   return (
-    <FlopLayout cards={cards} overlayMessage={overlayMessage}>
+    <FlopLayout
+      cards={cards}
+      overlayMessage={overlayMessage}
+      roomCode={() => client().roomCode}
+    >
       <div></div>
       <div>
         <Show when={players().length > 0}>
