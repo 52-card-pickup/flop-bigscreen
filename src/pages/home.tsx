@@ -7,6 +7,8 @@ import { useTestData } from "../signals/useTestData";
 import { Typewriter, TypewriterClass } from "../components/Typewriter";
 import { useParams } from "@solidjs/router";
 
+const FLOP_URL_ORIGIN = import.meta.env.VITE_ORIGIN_URL || "flop.party";
+
 export default function Home() {
   const params = useParams<{
     roomCode?: string;
@@ -39,15 +41,19 @@ export default function Home() {
 
 function Idle({ client }: { client: () => GameClientState }) {
   return (
-    <FlopLayout cards={() => []} roomCode={() => client().roomCode}>
+    <FlopLayout cards={() => []}>
       <div></div>
       <div>
         <p class="text-base text-center xl:text-3xl xl:pb-4">
           Grab your friends and join the game!
         </p>
         <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
-          flop.party
+          {FLOP_URL_ORIGIN}
         </h3>
+        <h2 class="text-2xl pt-8 font-normal text-center animate-pulse">
+          (tip: create a room on your mobile device and open the link on this
+          screen)
+        </h2>
       </div>
     </FlopLayout>
   );
@@ -67,10 +73,10 @@ function Waiting({ client }: { client: () => GameClientState }) {
   function startTypewriter(typewriter: TypewriterClass) {
     typewriter
       .pauseFor(500)
-      .typeString("flop.party")
+      .typeString(FLOP_URL_ORIGIN)
       .pauseFor(10_000)
       .deleteAll()
-      .typeString("https://flop.party")
+      .typeString(`https://${FLOP_URL_ORIGIN}`)
       .pauseFor(5_000)
       .deleteAll()
       .start();
@@ -92,7 +98,7 @@ function Waiting({ client }: { client: () => GameClientState }) {
           </p>
           <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
             <Typewriter autoStart={false} onInit={startTypewriter}>
-              flop.party
+              {FLOP_URL_ORIGIN}
             </Typewriter>
           </h3>
         </Show>

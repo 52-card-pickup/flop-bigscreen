@@ -115,6 +115,9 @@ export function createClient(
       maxWaitMs = 1000;
       setState(data);
     }
+    if (data?.state === "idle") {
+      return;
+    }
     const elapsed = Date.now() - before;
     timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
   }
