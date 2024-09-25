@@ -14,6 +14,7 @@ export type GameClientState = {
   pot: number;
   cards: [CardSuite, CardValue][];
   ticker: string | null;
+  roomCode: string | null;
   completed: CompletedGame | null;
   lastUpdate: number;
 };
@@ -58,7 +59,10 @@ export function apiURL() {
   throw new Error("Invalid API URL");
 }
 
-export function createClient(defaultState: Partial<GameClientState> = {}) {
+export function createClient(
+  roomCode?: string,
+  defaultState: Partial<GameClientState> = {}
+) {
   const query = new URLSearchParams(window.location.search);
   const url = import.meta.env.VITE_API_URL as string;
 
@@ -69,6 +73,7 @@ export function createClient(defaultState: Partial<GameClientState> = {}) {
       pot: 0,
       cards: [],
       ticker: null,
+      roomCode: null,
       completed: null,
       lastUpdate: 0,
       ...defaultState,
@@ -88,11 +93,12 @@ export function createClient(defaultState: Partial<GameClientState> = {}) {
 
     const before = Date.now();
     data = await fetch(requestUrl, {
+      headers: roomCode ? [["room-code", roomCode]] : [],
       signal: abortController.signal,
     })
       .then((res) => (res.ok ? res.json() : Promise.reject<null>(res)))
       .catch((e) => {
-if (e instanceof Error && e.name === "AbortError") {
+        if (e instanceof Error && e.name === "AbortError") {
           return null;
         }
 
@@ -108,6 +114,10 @@ if (e instanceof Error && e.name === "AbortError") {
     if (data && data.lastUpdate > state().lastUpdate) {
       maxWaitMs = 1000;
       setState(data);
+    }
+    if (data?.state === "idle") {
+      console.log("Room state is idle, stopping polling");
+      return;
     }
     const elapsed = Date.now() - before;
     timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));

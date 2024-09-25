@@ -5,11 +5,17 @@ import { Ticker } from "../components/Ticker";
 import { FlopLayout } from "../components/FlopLayout";
 import { useTestData } from "../signals/useTestData";
 import { Typewriter, TypewriterClass } from "../components/Typewriter";
+import { useParams } from "@solidjs/router";
+
+const FLOP_URL_ORIGIN = import.meta.env.VITE_ORIGIN_URL || "flop.party";
 
 export default function Home() {
+  const params = useParams<{
+    roomCode?: string;
+  }>();
   const testState = useTestData();
   const initialState = import.meta.env.MODE === "development" ? testState : {};
-  const client = createClient(initialState);
+  const client = createClient(params.roomCode, initialState);
   const ticker = () => client().ticker;
   return (
     <section
@@ -42,8 +48,12 @@ function Idle({ client }: { client: () => GameClientState }) {
           Grab your friends and join the game!
         </p>
         <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
-          flop.party
+          {FLOP_URL_ORIGIN}
         </h3>
+        <h2 class="text-2xl pt-8 font-normal text-center animate-pulse">
+          (tip: create a room on your mobile device and open the link on this
+          screen)
+        </h2>
       </div>
     </FlopLayout>
   );
@@ -63,16 +73,20 @@ function Waiting({ client }: { client: () => GameClientState }) {
   function startTypewriter(typewriter: TypewriterClass) {
     typewriter
       .pauseFor(500)
-      .typeString("flop.party")
+      .typeString(FLOP_URL_ORIGIN)
       .pauseFor(10_000)
       .deleteAll()
-      .typeString("https://flop.party")
+      .typeString(`https://${FLOP_URL_ORIGIN}`)
       .pauseFor(5_000)
       .deleteAll()
       .start();
   }
   return (
-    <FlopLayout cards={cards} overlayMessage={overlayMessage}>
+    <FlopLayout
+      cards={cards}
+      overlayMessage={overlayMessage}
+      roomCode={() => client().roomCode}
+    >
       <div></div>
       <div>
         <Show when={players().length > 0}>
@@ -84,7 +98,7 @@ function Waiting({ client }: { client: () => GameClientState }) {
           </p>
           <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
             <Typewriter autoStart={false} onInit={startTypewriter}>
-              flop.party
+              {FLOP_URL_ORIGIN}
             </Typewriter>
           </h3>
         </Show>
