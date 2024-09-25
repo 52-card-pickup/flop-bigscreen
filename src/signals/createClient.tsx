@@ -116,6 +116,7 @@ export function createClient(
       setState(data);
     }
     if (data?.state === "idle") {
+      console.log("Room state is idle, stopping polling");
       return;
     }
     const elapsed = Date.now() - before;
