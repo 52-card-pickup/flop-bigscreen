@@ -86,6 +86,7 @@ export function PlayerName({
     <div
       class="grid justify-center items-center gap-4 relative h-8 overflow-hidden group"
       ref={setEl}
+      title="Player Name"
     >
       <span
         class="text-2xl font-semibold text-zinc-300 text-center h-8 overflow-hidden

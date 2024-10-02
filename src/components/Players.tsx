@@ -95,6 +95,7 @@ function Player({
         "gap-2": !!completed?.(),
         "gap-4": !completed?.(),
       }}
+      title="Flop Player"
     >
       <div
         class="grid justify-center items-center transform transition-all duration-300 ease-in-out"
