@@ -6,6 +6,7 @@ import { memo } from "solid-js/web";
 
 export function FlopLayout(props: {
   cards: () => [CardSuite, CardValue][];
+  pairCode?: Accessor<string>;
   roomCode?: Accessor<string>;
   overlayMessage?: Accessor<string | string[]>;
   overlayElement?: Accessor<JSX.Element>;
@@ -40,6 +41,9 @@ export function FlopLayout(props: {
       <Show when={props.roomCode}>
         <RoomCode roomCode={props.roomCode} />
       </Show>
+      <Show when={props.pairCode}>
+        <PairCode pairCode={props.pairCode} />
+      </Show>
     </FlopContainer>
   );
 }
@@ -52,6 +56,19 @@ function RoomCode(props: { roomCode: Accessor<string> }) {
       </span>
       <span class="text-5xl font-semibold text-center bg-zinc-900/40 px-4 rounded-lg">
         {props.roomCode()}
+      </span>
+    </div>
+  );
+}
+
+function PairCode(props: { pairCode: Accessor<string> }) {
+  return (
+    <div class="absolute top-6 left-6 grid justify-center items-center gap-3 text-gray-600">
+      <span class="text-3xl font-normal uppercase text-center">
+        Pair this screen:
+      </span>
+      <span class="text-4xl font-semibold text-center bg-zinc-900/80 text-gray-400 px-4 rounded-lg">
+        {props.pairCode()}
       </span>
     </div>
   );

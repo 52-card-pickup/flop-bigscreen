@@ -41,7 +41,7 @@ export default function Home() {
 
 function Idle({ client }: { client: () => GameClientState }) {
   return (
-    <FlopLayout cards={() => []}>
+    <FlopLayout cards={() => []} pairCode={() => client().pairScreenCode}>
       <div></div>
       <div>
         <p class="text-base text-center xl:text-3xl xl:pb-4">
@@ -51,8 +51,10 @@ function Idle({ client }: { client: () => GameClientState }) {
           {FLOP_URL_ORIGIN}
         </h3>
         <h2 class="text-2xl pt-8 font-normal text-center animate-pulse">
-          (tip: create a room on your mobile device and open the link on this
-          screen)
+          <Show when={client().pairScreenCode}>
+            (tip: create a room on your mobile device and link to your room with
+            the pair code)
+          </Show>
         </h2>
       </div>
     </FlopLayout>

@@ -15,6 +15,7 @@ export type GameClientState = {
   cards: [CardSuite, CardValue][];
   ticker: string | null;
   roomCode: string | null;
+  pairScreenCode: string | null;
   completed: CompletedGame | null;
   lastUpdate: number;
 };
@@ -74,6 +75,7 @@ export function createClient(
       cards: [],
       ticker: null,
       roomCode: null,
+      pairScreenCode: null,
       completed: null,
       lastUpdate: 0,
       ...defaultState,
@@ -112,9 +114,16 @@ export function createClient(
       });
 
     if (data?.state === "idle") {
-      console.log("Room state is idle, stopping polling");
-      setState(data);
-      return;
+      if (!data.pairScreenCode) {
+        console.log("Room state is idle, stopping polling");
+        setState(data);
+        return;
+      }
+      if (data.roomCode) {
+        roomCode = data.roomCode;
+        const lastState = state();
+        setState({ ...lastState, lastUpdate: 0 });
+      }
     }
 
     if (data && data.lastUpdate > state().lastUpdate) {
