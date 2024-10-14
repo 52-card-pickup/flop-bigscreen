@@ -111,13 +111,15 @@ export function createClient(
         return null;
       });
 
+    if (data?.state === "idle") {
+      console.log("Room state is idle, stopping polling");
+      setState(data);
+      return;
+    }
+
     if (data && data.lastUpdate > state().lastUpdate) {
       maxWaitMs = 1000;
       setState(data);
-    }
-    if (data?.state === "idle") {
-      console.log("Room state is idle, stopping polling");
-      return;
     }
     const elapsed = Date.now() - before;
     timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));

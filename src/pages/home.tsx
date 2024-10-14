@@ -156,6 +156,7 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
   return (
     <FlopLayout
       cards={cards}
+      roomCode={() => client().roomCode}
       overlayElement={() => (
         <Show when={winner()} fallback={<div></div>}>
           <div class="grid justify-center items-center gap-4 absolute w-full top-0">
