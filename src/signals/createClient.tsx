@@ -119,8 +119,9 @@ export function createClient(
         setState(data);
         return;
       }
+      roomCode = data.roomCode ?? undefined;
+
       if (data.roomCode) {
-        roomCode = data.roomCode;
         const lastState = state();
         setState({ ...lastState, lastUpdate: 0 });
       }
