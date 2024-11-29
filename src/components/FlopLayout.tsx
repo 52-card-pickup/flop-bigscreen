@@ -62,13 +62,39 @@ function RoomCode(props: { roomCode: Accessor<string> }) {
 }
 
 function PairCode(props: { pairCode: Accessor<string> }) {
-  return (
-    <div class="absolute top-6 left-6 grid justify-center items-center gap-3 text-gray-600">
-      <span class="text-3xl font-normal uppercase text-center">
-        Pair this screen:
+  function TipBadge() {
+    return (
+      <span class="absolute top-0 right-0 w-8 h-8 transform translate-x-1/2 -translate-y-1/2">
+        <span class="absolute w-8 h-8 bg-watercourse-900 rounded-md transform rotate-45" />
+        <span class="absolute w-8 h-8 bg-watercourse-800 rounded-md transform rotate-45 animate-pulse" />
+        <span class="absolute w-8 h-8 flex justify-center items-center">
+          <span class="text-xs font-semibold uppercase text-watercourse-200">
+            Tip
+          </span>
+        </span>
       </span>
-      <span class="text-4xl font-semibold text-center bg-zinc-900/80 text-gray-400 px-4 rounded-lg">
-        {props.pairCode()}
+    );
+  }
+
+  return (
+    <div class="absolute top-10 right-10 grid justify-center items-center gap-3 bg-zinc-950 rounded-2xl border-4 border-watercourse-950 shadow-md shadow-black/30 opacity-95">
+      <span class="grid justify-center items-center">
+        <TipBadge />
+        <p class="text-xl font-medium text-center text-watercourse-100 max-w-[20ch] py-2 px-4 bg-watercourse-950">
+          Tap{" "}
+          <span class="text-watercourse-50 text-nowrap">
+            'Link with TV code'
+          </span>{" "}
+          on your phone
+        </p>
+        <span class="grid justify-center items-center gap-1 py-2 px-4">
+          <h3 class="text-xl font-medium text-center text-watercourse-50/70">
+            TV CODE
+          </h3>
+          <span class="text-4xl font-semibold text-center text-watercourse-50 rounded-lg">
+            {props.pairCode()}
+          </span>
+        </span>
       </span>
     </div>
   );
