@@ -6,6 +6,7 @@ import { FlopLayout } from "../components/FlopLayout";
 import { useTestData } from "../signals/useTestData";
 import { Typewriter, TypewriterClass } from "../components/Typewriter";
 import { useParams } from "@solidjs/router";
+import useSpotifyPlayer from "../signals/useSpotifyPlayer";
 
 const FLOP_URL_ORIGIN = import.meta.env.VITE_ORIGIN_URL || "flop.party";
 
@@ -17,6 +18,9 @@ export default function Home() {
   const initialState = import.meta.env.MODE === "development" ? testState : {};
   const client = createClient(params.roomCode, initialState);
   const ticker = () => client().ticker;
+
+  useSpotifyPlayer(client().spotifyAccessToken);
+
   return (
     <section
       class="bg-zinc-900 text-gray-700 grid justify-center h-screen w-screen overflow-auto"

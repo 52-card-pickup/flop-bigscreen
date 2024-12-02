@@ -17,6 +17,7 @@ export type GameClientState = {
   roomCode: string | null;
   completed: CompletedGame | null;
   lastUpdate: number;
+  spotifyAccessToken: string | null;
 };
 
 export type CompletedGame = {
@@ -76,6 +77,7 @@ export function createClient(
       roomCode: null,
       completed: null,
       lastUpdate: 0,
+      spotifyAccessToken: null,
       ...defaultState,
     },
     { name: "game-client", equals: (a, b) => a.lastUpdate === b.lastUpdate }
