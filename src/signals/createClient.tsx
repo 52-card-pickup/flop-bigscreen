@@ -94,6 +94,12 @@ export function createClient(
       : url;
 
     const before = Date.now();
+
+    function enqueueRefetch() {
+      const elapsed = Date.now() - before;
+      timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
+    }
+
     data = await fetch(requestUrl, {
       headers: roomCode ? [["room-code", roomCode]] : [],
       signal: abortController.signal,
@@ -124,15 +130,21 @@ export function createClient(
       if (data.roomCode) {
         const lastState = state();
         setState({ ...lastState, lastUpdate: 0 });
+        enqueueRefetch();
+        return;
       }
+
+      setState(data);
+      enqueueRefetch();
+      return;
     }
 
     if (data && data.lastUpdate > state().lastUpdate) {
       maxWaitMs = 1000;
       setState(data);
     }
-    const elapsed = Date.now() - before;
-    timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
+
+    enqueueRefetch();
   }
 
   function cancel() {
