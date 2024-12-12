@@ -6,6 +6,7 @@ import { memo } from "solid-js/web";
 
 export function FlopLayout(props: {
   cards: () => [CardSuite, CardValue][];
+  pairCode?: Accessor<string>;
   roomCode?: Accessor<string>;
   overlayMessage?: Accessor<string | string[]>;
   overlayElement?: Accessor<JSX.Element>;
@@ -40,6 +41,9 @@ export function FlopLayout(props: {
       <Show when={props.roomCode}>
         <RoomCode roomCode={props.roomCode} />
       </Show>
+      <Show when={props.pairCode}>
+        <PairCode pairCode={props.pairCode} />
+      </Show>
     </FlopContainer>
   );
 }
@@ -52,6 +56,45 @@ function RoomCode(props: { roomCode: Accessor<string> }) {
       </span>
       <span class="text-5xl font-semibold text-center bg-zinc-900/40 px-4 rounded-lg">
         {props.roomCode()}
+      </span>
+    </div>
+  );
+}
+
+function PairCode(props: { pairCode: Accessor<string> }) {
+  function TipBadge() {
+    return (
+      <span class="absolute top-0 right-0 w-8 h-8 transform translate-x-1/2 -translate-y-1/2">
+        <span class="absolute w-8 h-8 bg-watercourse-900 rounded-md transform rotate-45" />
+        <span class="absolute w-8 h-8 bg-watercourse-800 rounded-md transform rotate-45 animate-pulse" />
+        <span class="absolute w-8 h-8 flex justify-center items-center">
+          <span class="text-xs font-semibold uppercase text-watercourse-200">
+            Tip
+          </span>
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <div class="absolute top-10 right-10 grid justify-center items-center gap-3 bg-zinc-950 rounded-2xl border-4 border-watercourse-950 shadow-md shadow-black/30 opacity-95">
+      <span class="grid justify-center items-center">
+        <TipBadge />
+        <p class="text-xl font-medium text-center text-watercourse-100 max-w-[20ch] py-2 px-4 bg-watercourse-950">
+          Tap{" "}
+          <span class="text-watercourse-50 text-nowrap">
+            'Link with TV code'
+          </span>{" "}
+          on your phone
+        </p>
+        <span class="grid justify-center items-center gap-1 py-2 px-4">
+          <h3 class="text-xl font-medium text-center text-watercourse-50/70">
+            TV CODE
+          </h3>
+          <span class="text-4xl font-semibold text-center text-watercourse-50 rounded-lg">
+            {props.pairCode()}
+          </span>
+        </span>
       </span>
     </div>
   );

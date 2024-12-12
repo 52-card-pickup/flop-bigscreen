@@ -15,6 +15,7 @@ export type GameClientState = {
   cards: [CardSuite, CardValue][];
   ticker: string | null;
   roomCode: string | null;
+  pairScreenCode: string | null;
   completed: CompletedGame | null;
   lastUpdate: number;
 };
@@ -74,6 +75,7 @@ export function createClient(
       cards: [],
       ticker: null,
       roomCode: null,
+      pairScreenCode: null,
       completed: null,
       lastUpdate: 0,
       ...defaultState,
@@ -92,6 +94,12 @@ export function createClient(
       : url;
 
     const before = Date.now();
+
+    function enqueueRefetch() {
+      const elapsed = Date.now() - before;
+      timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
+    }
+
     data = await fetch(requestUrl, {
       headers: roomCode ? [["room-code", roomCode]] : [],
       signal: abortController.signal,
@@ -112,8 +120,22 @@ export function createClient(
       });
 
     if (data?.state === "idle") {
-      console.log("Room state is idle, stopping polling");
+      if (!data.pairScreenCode) {
+        console.log("Room state is idle, stopping polling");
+        setState(data);
+        return;
+      }
+      roomCode = data.roomCode ?? undefined;
+
+      if (data.roomCode) {
+        const lastState = state();
+        setState({ ...lastState, lastUpdate: 0 });
+        enqueueRefetch();
+        return;
+      }
+
       setState(data);
+      enqueueRefetch();
       return;
     }
 
@@ -121,8 +143,8 @@ export function createClient(
       maxWaitMs = 1000;
       setState(data);
     }
-    const elapsed = Date.now() - before;
-    timeout = setTimeout(get, Math.max(0, maxWaitMs - elapsed));
+
+    enqueueRefetch();
   }
 
   function cancel() {

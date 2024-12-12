@@ -19,9 +19,10 @@ export default function Home() {
   const ticker = () => client().ticker;
   return (
     <section
-      class="bg-zinc-900 text-gray-700 grid justify-center h-screen w-screen overflow-auto"
+      class="relative bg-zinc-900 text-gray-700 grid justify-center h-screen w-screen overflow-hidden"
       data-component-name="Home"
     >
+      <div class="absolute inset-0 bg-gradient-to-br from-zinc-900 to-[hsl(169,96%,6%)] animate-spin-slow pointer-events-none"></div>
       <Show when={client().state === "idle"}>
         <Idle client={client} />
       </Show>
@@ -41,18 +42,20 @@ export default function Home() {
 
 function Idle({ client }: { client: () => GameClientState }) {
   return (
-    <FlopLayout cards={() => []}>
+    <FlopLayout cards={() => []} pairCode={() => client().pairScreenCode}>
       <div></div>
       <div>
         <p class="text-base text-center xl:text-3xl xl:pb-4">
           Grab your friends and join the game!
         </p>
-        <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
+        <h3 class="text-2xl font-bold text-center text-zinc-50 xl:text-5xl">
           {FLOP_URL_ORIGIN}
         </h3>
         <h2 class="text-2xl pt-8 font-normal text-center animate-pulse">
-          (tip: create a room on your mobile device and open the link on this
-          screen)
+          <Show when={client().pairScreenCode}>
+            (tip: create a room on your mobile device and link to your room with
+            the pair code)
+          </Show>
         </h2>
       </div>
     </FlopLayout>
@@ -96,7 +99,7 @@ function Waiting({ client }: { client: () => GameClientState }) {
           <p class="text-base text-center xl:text-3xl xl:pb-4">
             Grab your friends and join the game!
           </p>
-          <h3 class="text-2xl font-bold shadow-sm text-center text-zinc-50 xl:text-5xl">
+          <h3 class="text-2xl font-bold text-center text-zinc-50 xl:text-5xl">
             <Typewriter autoStart={false} onInit={startTypewriter}>
               {FLOP_URL_ORIGIN}
             </Typewriter>
@@ -160,7 +163,7 @@ function RoundComplete({ client }: { client: () => GameClientState }) {
       overlayElement={() => (
         <Show when={winner()} fallback={<div></div>}>
           <div class="grid justify-center items-center gap-4 absolute w-full top-0">
-            <h1 class="text-4xl font-semibold py-6 shadow-sm text-center text-green-50">
+            <h1 class="text-4xl font-semibold py-6 text-center text-green-50">
               <Typewriter loop={false}>
                 {`${winner().name} wins with a ${winner().hand}`}
               </Typewriter>
