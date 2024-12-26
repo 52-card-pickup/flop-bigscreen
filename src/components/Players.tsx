@@ -96,6 +96,7 @@ function Player({
         "gap-4": !completed?.(),
       }}
       title="Flop Player"
+      data-folded={player().folded}
     >
       <div
         class="grid justify-center items-center transform transition-all duration-300 ease-in-out"
